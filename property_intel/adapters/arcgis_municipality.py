@@ -124,7 +124,7 @@ def _supersede_scope_snapshot(store: EvidenceStore, scope_id: str, source_id: st
     store.db.execute(
         f"UPDATE facts SET status='superseded' WHERE status='current' "
         f"AND predicate IN ({placeholders}) "
-        "AND subject_id IN (SELECT property_id FROM property_index WHERE scope_id=?) "
+        "AND subject_id IN (SELECT property_id FROM property_index WHERE scope_id=? AND status!='legacy_unmappable') "
         "AND source_id IN (SELECT old.source_id FROM sources old JOIN sources new "
         "ON old.source_name=new.source_name AND old.authority=new.authority WHERE new.source_id=?)",
         (*predicates, scope_id, source_id),
@@ -140,7 +140,7 @@ def _supersede_scope_entity_snapshot(store: EvidenceStore, scope_id: str, source
         f"UPDATE facts SET status='superseded' WHERE status='current' "
         f"AND predicate IN ({placeholders}) "
         "AND subject_id IN (SELECT g.parcel_id FROM grouping_decisions g "
-        "JOIN property_index p ON p.property_id=g.target_id WHERE p.scope_id=?) "
+        "JOIN property_index p ON p.property_id=g.target_id WHERE p.scope_id=? AND p.status!='legacy_unmappable') "
         "AND source_id IN (SELECT old.source_id FROM sources old JOIN sources new "
         "ON old.source_name=new.source_name AND old.authority=new.authority WHERE new.source_id=?)",
         (*predicates, scope_id, source_id),
@@ -159,14 +159,14 @@ def _parcel_lookup(store: EvidenceStore, scope_id: str) -> tuple[dict[str, set[s
         "JOIN property_entity_links l ON l.property_id=p.property_id "
         "JOIN entities e ON e.entity_id=l.entity_id AND e.entity_type='parcel' "
         "JOIN entity_aliases a ON a.entity_id=e.entity_id AND a.alias_type='parcel_identifier' "
-        "WHERE p.scope_id=?", (scope_id,),
+        "WHERE p.scope_id=? AND p.status!='legacy_unmappable'", (scope_id,),
     ):
         aliases[str(row["normalized_value"])].add(row["entity_id"])
     for row in store.rows(
         "SELECT l.entity_id,l.property_id FROM property_index p "
         "JOIN property_entity_links l ON l.property_id=p.property_id "
         "JOIN entities e ON e.entity_id=l.entity_id AND e.entity_type='parcel' "
-        "WHERE p.scope_id=?", (scope_id,),
+        "WHERE p.scope_id=? AND p.status!='legacy_unmappable'", (scope_id,),
     ):
         properties[row["entity_id"]].add(row["property_id"])
     return aliases, properties
@@ -187,7 +187,7 @@ def _collect_parcels(store: EvidenceStore, scope: dict[str, Any], session: reque
     address_suffix = layer.get("address_suffix", "")
     property_by_address = {
         row["normalized_address"]: row["property_id"] for row in store.rows(
-            "SELECT property_id,normalized_address FROM property_index WHERE scope_id=?", (scope["id"],)
+            "SELECT property_id,normalized_address FROM property_index WHERE scope_id=? AND status!='legacy_unmappable'", (scope["id"],)
         )
     }
     matched_entities: set[str] = set()
@@ -268,7 +268,7 @@ def _site_geometries(store: EvidenceStore, scope_id: str) -> tuple[dict[str, Any
         "SELECT p.property_id,l.entity_id,f.value_json,f.observed_at FROM property_index p "
         "JOIN property_entity_links l ON l.property_id=p.property_id AND l.role='parcel' "
         "JOIN facts f ON f.subject_id=l.entity_id AND f.predicate='parcel_geometry' AND f.status='current' "
-        "WHERE p.scope_id=? ORDER BY f.observed_at DESC", (scope_id,),
+        "WHERE p.scope_id=? AND p.status!='legacy_unmappable' ORDER BY f.observed_at DESC", (scope_id,),
     ):
         by_property[row["property_id"]].setdefault(row["entity_id"], json.loads(row["value_json"]))
     geographic: dict[str, Any] = {}
@@ -303,7 +303,7 @@ def _geocode_missing(store: EvidenceStore, scope: dict[str, Any], session: reque
         access_note="Official public geocoding API; point match is not parcel geometry.",
     )
     rows = store.rows(
-        "SELECT property_id,address FROM property_index WHERE scope_id=? ORDER BY property_id",
+        "SELECT property_id,address FROM property_index WHERE scope_id=? AND status!='legacy_unmappable' ORDER BY property_id",
         (scope["id"],),
     )
     pending = [dict(row) for row in rows if row["property_id"] not in geographic]
@@ -491,7 +491,7 @@ def _collect_context_layer(store: EvidenceStore, scope: dict[str, Any], session:
     matched_properties = 0
     match_count = 0
     property_rows = store.rows(
-        "SELECT property_id FROM property_index WHERE scope_id=? ORDER BY property_id", (scope["id"],)
+        "SELECT property_id FROM property_index WHERE scope_id=? AND status!='legacy_unmappable' ORDER BY property_id", (scope["id"],)
     )
     for row in property_rows:
         property_id = row["property_id"]
@@ -593,7 +593,7 @@ def collect(store: EvidenceStore, scope: dict[str, Any], config: dict[str, Any])
                             parcel_source_raw, totals)
     totals["properties_with_analysis_geometry"] = len(geographic)
     totals["indexed_properties"] = store.db.execute(
-        "SELECT COUNT(*) FROM property_index WHERE scope_id=?", (scope["id"],)
+        "SELECT COUNT(*) FROM property_index WHERE scope_id=? AND status!='legacy_unmappable'", (scope["id"],)
     ).fetchone()[0]
     for layer in config.get("layers", []):
         _collect_context_layer(store, scope, session, layer, timeout,
@@ -608,7 +608,7 @@ def collect(store: EvidenceStore, scope: dict[str, Any], config: dict[str, Any])
         )
         _supersede_scope_snapshot(store, scope["id"], source_id, [item["predicate"]])
         for row in store.rows(
-            "SELECT property_id FROM property_index WHERE scope_id=? ORDER BY property_id",
+            "SELECT property_id FROM property_index WHERE scope_id=? AND status!='legacy_unmappable' ORDER BY property_id",
             (scope["id"],),
         ):
             store.fact(

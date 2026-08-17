@@ -45,6 +45,8 @@ CREATE TABLE IF NOT EXISTS facts (
   FOREIGN KEY(raw_sha256) REFERENCES raw_evidence(raw_sha256)
 );
 CREATE INDEX IF NOT EXISTS idx_facts_subject ON facts(subject_id, category, predicate);
+CREATE INDEX IF NOT EXISTS idx_facts_predicate_status_subject ON facts(predicate, status, subject_id);
+CREATE INDEX IF NOT EXISTS idx_facts_subject_predicate_status ON facts(subject_id, predicate, status);
 CREATE TABLE IF NOT EXISTS relationships (
   relationship_id TEXT PRIMARY KEY, from_entity_id TEXT NOT NULL, relationship_type TEXT NOT NULL,
   to_entity_id TEXT NOT NULL, fact_class TEXT NOT NULL, confidence REAL NOT NULL,

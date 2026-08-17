@@ -74,6 +74,9 @@ def collect(store: EvidenceStore, scope: dict[str, Any],
     scope_id = scope["id"]
     address_suffix = config.get("address_suffix", "")
     accepted_statuses = set(config.get("accepted_statuses", []))
+    legacy_unmappable_ids = {
+        normalize_text(str(value)) for value in config.get("legacy_unmappable_parcel_ids", [])
+    }
     manifest = None
     if config.get("manifest_path"):
         manifest = json.loads(Path(config["manifest_path"]).read_text(encoding="utf-8"))
@@ -148,11 +151,16 @@ def collect(store: EvidenceStore, scope: dict[str, Any],
             )
             property_name = config.get("property_name_template", "{address} Property").format(
                 address=situs, municipality=scope.get("name", ""))
+            property_status = (
+                "legacy_unmappable" if normalize_text(parcel_raw) in legacy_unmappable_ids
+                else "precomputed"
+            )
             if property_id not in properties:
                 store.upsert_indexed_property(
                     property_id=property_id, scope_id=scope_id, name=property_name,
                     address=full_address, normalized_address=normalized_address,
                     external_id=f"{scope_id}:{normalize_address(situs) if has_situs else normalize_text(parcel_raw)}",
+                    status=property_status,
                     attributes={"assembly_basis": ("exact normalized situs address" if has_situs
                                                    else "official parcel without published situs")},
                 )
