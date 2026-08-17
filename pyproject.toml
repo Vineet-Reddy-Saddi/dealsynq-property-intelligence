@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dealsynq-property-intelligence"
+version = "0.3.0"
+description = "Evidence-backed, incremental deep-property intelligence pipeline"
+requires-python = ">=3.11"
+dependencies = [
+  "beautifulsoup4>=4.12",
+  "pypdf>=6.0",
+  "pyproj>=3.6",
+  "requests>=2.32",
+  "shapely>=2.0",
+]
+
+[project.scripts]
+property-intel = "property_intel.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["property_intel*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

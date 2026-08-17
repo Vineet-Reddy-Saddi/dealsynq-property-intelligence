@@ -1,0 +1,25 @@
+# Generated local evidence and runtime outputs (not source of truth)
+activations/
+data/
+reports/
+tmp/
+tmp_activation.json
+pilots/*
+!pilots/stamford_ct/
+pilots/stamford_ct/*
+!pilots/stamford_ct/STAMFORD_PILOT_AUDIT.md
+
+# The demo is maintained and published as its own repository.
+demo/
+
+# Python and local tooling
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+.venv/
+venv/
+
+# Local editor and operating-system state
+.DS_Store
+Thumbs.db

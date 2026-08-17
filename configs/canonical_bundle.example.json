@@ -1,0 +1,67 @@
+{
+  "schema_version": "property-evidence-bundle/1.0.0",
+  "default_source": {
+    "ref": "source",
+    "name": "Approved public source",
+    "url": "https://example.gov/property-record",
+    "authority": "official municipal source",
+    "source_date": "2026-01-01"
+  },
+  "entities": [
+    {
+      "ref": "tenant_1",
+      "entity_type": "tenant",
+      "canonical_name": "Example Tenant",
+      "external_id": "provider-tenant-123",
+      "aliases": [
+        {
+          "alias_type": "organization_name",
+          "raw_value": "EXAMPLE TENANT, LLC",
+          "normalized_value": "EXAMPLE TENANT LLC",
+          "source_ref": "source",
+          "confidence": 1.0
+        }
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "subject_ref": "$target",
+      "category": "market",
+      "predicate": "example_metric",
+      "value": 100,
+      "unit": "USD",
+      "fact_class": "reported",
+      "confidence": 0.8,
+      "source_ref": "source",
+      "effective_date": "2026-01-01",
+      "freshness_days": 30,
+      "evidence_locator": "Public record field example_metric"
+    }
+  ],
+  "relationships": [
+    {
+      "from_ref": "tenant_1",
+      "relationship_type": "reported_occupant_of",
+      "to_ref": "$target",
+      "fact_class": "reported",
+      "confidence": 0.8,
+      "source_ref": "source",
+      "effective_date": "2026-01-01"
+    }
+  ],
+  "temporal_states": [
+    {
+      "subject_ref": "tenant_1",
+      "state_type": "tenant_occupancy",
+      "value": "reported_open",
+      "fact_class": "reported",
+      "confidence": 0.8,
+      "source_ref": "source",
+      "first_seen": "2026-01-01",
+      "last_seen": "2026-01-01"
+    }
+  ],
+  "events": [],
+  "gaps": []
+}

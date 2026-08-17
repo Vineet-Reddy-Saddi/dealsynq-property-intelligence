@@ -1,0 +1,149 @@
+{
+  "scope": {
+    "id": "cumberland_ri",
+    "scope_type": "municipality",
+    "jurisdiction_id": "cumberland_ri",
+    "name": "Cumberland, Rhode Island",
+    "state_code": "RI"
+  },
+  "database": "../pilots/cumberland_ri/data/cumberland_ri_precomputed.sqlite",
+  "output_root": "../pilots/cumberland_ri",
+  "coverage_report": "../pilots/cumberland_ri/reports/cumberland_ri_batch_coverage.json",
+  "batch_engines": [
+    {
+      "key": "assessor",
+      "adapter": "tabular_municipality",
+      "coverage_status": "complete",
+      "completion_basis": "The verified Rhode Island delivery reports 15,521 Cumberland output rows, preservation of all 15,331 assessor rows, validation of required schema and counts, and a successful official-source extraction completed 2026-08-06.",
+      "config": {
+        "path": "F:/DealSynq/town-source-inventory/outputs/states/Rhode_Island/towns/Cumberland_town/combined_property_data.csv",
+        "manifest_path": "F:/DealSynq/town-source-inventory/outputs/states/Rhode_Island/towns/Cumberland_town/assessor_manifest.json",
+        "address_suffix": ", Cumberland, RI",
+        "include_without_address": true,
+        "unaddressed_label_template": "Unaddressed parcel {parcel_id}",
+        "property_name_template": "{address} Property",
+        "geometry_area_unit": "acres",
+        "fields": {
+          "join_status": "combined_join_status",
+          "parcel_id": "Mblu",
+          "secondary_parcel_id": "vision_pid_display",
+          "geometry_parcel_id": "gis_PlatLot",
+          "address": "Location",
+          "owner": "Owner",
+          "zoning": "zoning__ZONE_CODE",
+          "use_code": "UseCode",
+          "use_description": "UseCodeDescription",
+          "assessment_year": "assessment_year",
+          "assessed_land": "assessed_land",
+          "assessed_improvement": "assessed_improvement",
+          "assessed_total": "assessed_total",
+          "last_sale_date": "last_sale_date",
+          "last_sale_price": "last_sale_price",
+          "year_built": "year_built",
+          "building_area": "living_area",
+          "land_area": "gis_Acres",
+          "geometry": "gis_geometry_geojson",
+          "geometry_area": "gis_Acres",
+          "record_url": "source_url",
+          "record_retrieved_at": "source_checked_utc"
+        },
+        "extra_facts": [
+          {"field": "gis_PctImp", "category": "environmental", "predicate": "impervious_cover_percent", "value_type": "number", "unit": "percent", "source": "parcel"},
+          {"field": "gis_PctDev", "category": "environmental", "predicate": "developed_land_percent", "value_type": "number", "unit": "percent", "source": "parcel"},
+          {"field": "gis_PctForest", "category": "environmental", "predicate": "forest_cover_percent", "value_type": "number", "unit": "percent", "source": "parcel"},
+          {"field": "gis_PWS_Wshed", "category": "environmental", "predicate": "public_water_supply_watershed_flag", "value_type": "boolean", "source": "parcel"},
+          {"field": "gis_GW_Acquifer", "category": "environmental", "predicate": "groundwater_aquifer_flag", "value_type": "boolean", "source": "parcel"},
+          {"field": "gis_GW_Recharge", "category": "environmental", "predicate": "groundwater_recharge_area_flag", "value_type": "boolean", "source": "parcel"},
+          {"field": "gis_EPA_Sole", "category": "environmental", "predicate": "epa_sole_source_aquifer_flag", "value_type": "boolean", "source": "parcel"},
+          {"field": "zoning__ZONE_DESC", "category": "zoning", "predicate": "zoning_description", "source": "parcel"},
+          {"field": "zoning__DENSITY", "category": "zoning", "predicate": "zoning_density_class", "source": "parcel"},
+          {"field": "zoning__MIN_LOT_SF", "category": "zoning", "predicate": "minimum_lot_area", "value_type": "number", "unit": "sq_ft", "source": "parcel"},
+          {"field": "bld_style", "category": "physical", "predicate": "building_style", "source": "assessor"},
+          {"field": "BldCount", "category": "physical", "predicate": "building_count", "value_type": "integer", "source": "assessor"}
+        ],
+        "assessor_source": {
+          "name": "Town of Cumberland property assessment database",
+          "url": "https://gis.vgsi.com/cumberlandri/",
+          "authority": "Official Town of Cumberland assessor database hosted by Vision Government Solutions",
+          "source_date": "2025 valuation records",
+          "retrieved_at": "2026-08-06T21:28:20.565853+00:00",
+          "access_note": "Read-only consumption of the verified Rhode Island delivery; individual public record URLs and retrieval times are retained."
+        },
+        "parcel_source": {
+          "name": "Rhode Island statewide tax parcels and municipal zoning",
+          "url": "https://risegis.ri.gov/hosting/rest/services/RIDEM/Tax_Parcels/MapServer/0",
+          "authority": "Official Rhode Island Geographic Information System public data",
+          "source_date": "Tax parcel attributes June 2021; zoning publisher metadata retained in input",
+          "retrieved_at": "2026-08-06T20:31:10.627699+00:00",
+          "access_note": "Read-only consumption of the verified Rhode Island delivery."
+        }
+      }
+    },
+    {
+      "key": "parcel_gis",
+      "coverage_from": "assessor",
+      "coverage_status": "complete",
+      "completion_basis": "The verified delivery reports 14,130 official parcel records, 14,130 represented unique parcel object IDs, and parcel GIS verification for Cumberland."
+    },
+    {
+      "key": "zoning",
+      "coverage_from": "assessor",
+      "coverage_status": "partial",
+      "reason": "The verified delivery includes a statewide municipal-zoning spatial join for all 14,130 parcel records. Ordinance text, use-table interpretation, dimensional exceptions, overlays, and entitlement rules are not yet computationally normalized."
+    },
+    {
+      "key": "owner_entities",
+      "coverage_from": "assessor",
+      "coverage_status": "partial",
+      "reason": "Assessor owner names and owner-to-parcel edges are loaded. Secretary of State filings, principals, parents, and beneficial ownership remain unconnected."
+    },
+    {
+      "key": "deeds",
+      "status": "missing",
+      "reason": "Assessor latest-sale and book/page observations are not a complete deed index or instrument collection. No approved Cumberland land-record bulk collector is connected."
+    },
+    {
+      "key": "mortgages_liens",
+      "status": "missing",
+      "reason": "No approved mortgage, assignment, release, UCC, or lien bulk collector is connected."
+    },
+    {
+      "key": "site_assembly",
+      "coverage_from": "assessor",
+      "coverage_status": "partial",
+      "reason": "The generic assembler groups exact normalized situs addresses with explicit parcel decisions. Deed collateral, shared ownership, adjacency, easements, and subdivision plans are not yet incorporated."
+    },
+    {
+      "key": "permits_planning",
+      "status": "missing",
+      "reason": "No approved Cumberland permit, planning, variance, or certificate-of-occupancy bulk collector is connected."
+    },
+    {
+      "key": "hazards",
+      "coverage_from": "assessor",
+      "coverage_status": "partial",
+      "reason": "RIGIS parcel attributes provide impervious, developed, forest, aquifer, groundwater recharge, and public-water-supply screens. FEMA flood, NWI wetlands, natural-risk, soils, elevation, and EPA proximity run through the generic national adapter at activation."
+    },
+    {
+      "key": "infrastructure",
+      "status": "missing",
+      "required": false,
+      "reason": "Legal frontage, curb cuts, access rights, transit, and utility capacity are not precomputed in this pilot."
+    }
+  ],
+  "on_demand_engines": [
+    {
+      "key": "national_public_context",
+      "adapter": "national_public",
+      "required": false,
+      "live": true,
+      "config": {
+        "enabled": true,
+        "required": false,
+        "refresh_days": 30,
+        "epa_radius_miles": 1,
+        "timeout_seconds": 90
+      }
+    }
+  ]
+}

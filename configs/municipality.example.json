@@ -1,0 +1,84 @@
+{
+  "scope": {
+    "id": "example_ma",
+    "scope_type": "municipality",
+    "jurisdiction_id": "example_ma",
+    "name": "Example Municipality, Massachusetts",
+    "state_code": "MA"
+  },
+  "database": "../data/example_ma_precomputed.sqlite",
+  "output_root": "..",
+  "coverage_report": "../reports/example_ma_batch_coverage.json",
+  "batch_engines": [
+    {
+      "key": "assessor",
+      "adapter": "municipality_bundle",
+      "coverage_status": "complete",
+      "completion_basis": "Illustrative fixture contains its full assessor sample",
+      "config": {"paths": ["municipality_bundle.example.json"]}
+    },
+    {
+      "key": "parcel_gis",
+      "adapter": "municipality_bundle",
+      "coverage_status": "partial",
+      "reason": "Illustrative fixture has a parcel identifier but omits real polygon geometry",
+      "config": {"paths": ["municipality_bundle.example.json"]}
+    },
+    {
+      "key": "zoning",
+      "adapter": "municipality_bundle",
+      "coverage_status": "partial",
+      "reason": "Illustrative fixture omits an authoritative zoning layer and ordinance rules",
+      "config": {"paths": ["municipality_bundle.example.json"]}
+    },
+    {
+      "key": "owner_entities",
+      "adapter": "municipality_bundle",
+      "coverage_status": "partial",
+      "reason": "Illustrative fixture has an assessor owner but no corporate-registry enrichment",
+      "config": {"paths": ["municipality_bundle.example.json"]}
+    },
+    {
+      "key": "deeds",
+      "status": "missing",
+      "reason": "Connect an approved recorder export or index collector for this jurisdiction"
+    },
+    {
+      "key": "mortgages_liens",
+      "status": "missing",
+      "reason": "Connect permitted mortgage/lien index evidence"
+    },
+    {
+      "key": "site_assembly",
+      "adapter": "municipality_bundle",
+      "coverage_status": "complete",
+      "completion_basis": "The illustrative scope contains one property and one explained parcel membership",
+      "config": {"paths": ["municipality_bundle.example.json"]}
+    },
+    {
+      "key": "permits_planning",
+      "status": "missing",
+      "reason": "Connect a municipal permit/planning bulk source"
+    },
+    {
+      "key": "hazards",
+      "status": "missing",
+      "reason": "Connect precomputed parcel/hazard intersections"
+    },
+    {
+      "key": "infrastructure",
+      "status": "missing",
+      "required": false,
+      "reason": "Optional until a reusable infrastructure source is configured"
+    }
+  ],
+  "on_demand_engines": [
+    {
+      "key": "current_web_intelligence",
+      "adapter": "web_intelligence",
+      "required": false,
+      "live": true,
+      "config": {"providers": []}
+    }
+  ]
+}

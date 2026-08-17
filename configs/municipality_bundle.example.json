@@ -1,0 +1,95 @@
+{
+  "schema_version": "municipality-evidence-bundle/1.0.0",
+  "default_source": {
+    "ref": "official",
+    "name": "Approved municipal source",
+    "url": "https://example.gov/open-data",
+    "authority": "official municipal source",
+    "source_date": "2026-01-01"
+  },
+  "properties": [
+    {
+      "ref": "site_1",
+      "name": "Example Center",
+      "address": "10 Main Street, Example, MA 01000",
+      "external_id": "example-center"
+    }
+  ],
+  "entities": [
+    {
+      "ref": "parcel_1",
+      "entity_type": "parcel",
+      "canonical_name": "P-100",
+      "external_id": "example_ma:P-100",
+      "property_refs": ["site_1"],
+      "aliases": [
+        {
+          "alias_type": "parcel_identifier",
+          "raw_value": "P-100",
+          "normalized_value": "P 100"
+        },
+        {
+          "alias_type": "situs_address",
+          "raw_value": "10 MAIN STREET",
+          "normalized_value": "10 MAIN ST"
+        }
+      ]
+    },
+    {
+      "ref": "owner_1",
+      "entity_type": "organization",
+      "canonical_name": "Example Owner LLC",
+      "external_id": "ma:example-owner",
+      "property_refs": ["site_1"]
+    }
+  ],
+  "facts": [
+    {
+      "subject_ref": "parcel_1",
+      "category": "assessor",
+      "predicate": "land_area",
+      "value": 10000,
+      "unit": "sq_ft",
+      "fact_class": "confirmed_official",
+      "confidence": 1.0,
+      "source_ref": "official"
+    },
+    {
+      "subject_ref": "site_1",
+      "category": "calculation",
+      "predicate": "site_land_area",
+      "value": 10000,
+      "unit": "sq_ft",
+      "fact_class": "calculation",
+      "confidence": 1.0,
+      "source_ref": "official"
+    }
+  ],
+  "relationships": [
+    {
+      "from_ref": "owner_1",
+      "relationship_type": "assessor_owner_of",
+      "to_ref": "parcel_1",
+      "fact_class": "confirmed_official",
+      "confidence": 1.0,
+      "source_ref": "official"
+    }
+  ],
+  "memberships": [
+    {
+      "property_ref": "site_1",
+      "parcel_ref": "parcel_1",
+      "included": true,
+      "score": 1.0,
+      "threshold": 0.6,
+      "classification": "confirmed_anchor",
+      "evidence": {
+        "classification": "confirmed_anchor",
+        "address_match": {"matched": true}
+      }
+    }
+  ],
+  "events": [],
+  "temporal_states": [],
+  "gaps": []
+}

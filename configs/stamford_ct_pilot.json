@@ -1,0 +1,1095 @@
+{
+  "scope": {
+    "id": "stamford_ct",
+    "scope_type": "municipality",
+    "jurisdiction_id": "stamford_ct",
+    "name": "Stamford, Connecticut",
+    "state_code": "CT"
+  },
+  "database": "../pilots/stamford_ct/data/stamford_ct_precomputed.sqlite",
+  "output_root": "../pilots/stamford_ct",
+  "coverage_report": "../pilots/stamford_ct/reports/stamford_ct_batch_coverage.json",
+  "derived_metrics": {
+    "executed_sales": {
+      "source_predicates": ["official_city_sales_comparable_screen", "official_city_historical_sales_screen"],
+      "max_comparables": 25,
+      "field_aliases": {
+        "address": ["Addr_Full", "Address", "PropertyAddress"],
+        "street_number": ["Number", "REM_PRCL_LOCN_NUM"],
+        "street_name": ["StreetName", "REM_PRCL_LOCN_STREET"],
+        "unit": ["Unit", "REM_MBLU_UNIT"],
+        "date": ["SaleDate", "SLH_SALE_DATE"],
+        "price": ["SalePrice", "SLH_PRICE"],
+        "area": ["LivingArea", "CNS_AREA_LIVING"],
+        "property_type": ["PropertyType", "CNS_STYLE_DESC"]
+      }
+    },
+    "zoning_capacity": {
+      "source_predicates": ["official_city_zoning_map_intersection"],
+      "district_fields": ["ZoningDistrict", "ZONE_Type"],
+      "rules_source": "City of Stamford Zoning Regulations Appendix B, effective 2026-06-19",
+      "limitation": "Appendix B dimensional screening only. Section 5 controls in a conflict; use permissions, setbacks, parking, overlays, bonuses, special permits, variances, legal-lot status and agency interpretation are not resolved by this calculation.",
+      "rules": {
+        "C-B": {"minimum_lot_sqft": 5000, "far": 0.5, "lot_coverage_percent": 40, "height": "4 stories / 50 ft"},
+        "C-C": {"minimum_lot_sqft": 4000, "far": 2.0, "lot_coverage_percent": 80, "height": "290 ft; bonuses and corner-lot standards may differ"},
+        "C-G1": {"minimum_lot_sqft": 4000, "far": 1.8, "lot_coverage_percent": 70, "height": "75 ft; corner-lot coverage may differ"},
+        "C-G2": {"minimum_lot_sqft": 4000, "far": 1.8, "lot_coverage_percent": 80, "height": "100 ft; corner-lot coverage may differ"},
+        "C-I": {"minimum_lot_sqft": 4000, "far": 1.2, "lot_coverage_percent": 50, "height": "5 stories / 55 ft"},
+        "C-L": {"minimum_lot_sqft": 4000, "far": 1.0, "lot_coverage_percent": 50, "height": "4 stories / 45 ft; premium provisions may differ"},
+        "C-N": {"minimum_lot_sqft": 5000, "far": 0.3, "lot_coverage_percent": 30, "height": "2 stories / 25 ft"},
+        "CW-D": {"minimum_lot_sqft": 4000, "far": 1.0, "lot_coverage_percent": 50, "height": "4 stories / 50 ft"},
+        "M-G": {"minimum_lot_sqft": 4000, "far": 1.0, "lot_coverage_percent": 80, "height": "4 stories / 50 ft; corner-lot coverage may differ"},
+        "M-L": {"minimum_lot_sqft": 4000, "far": 1.0, "lot_coverage_percent": 80, "height": "4 stories / 50 ft; corner-lot coverage may differ"},
+        "R-10": {"minimum_lot_sqft": 10000, "far": 0.5, "lot_coverage_percent": 20, "height": "2.5 stories / 30 ft"},
+        "R-20": {"minimum_lot_sqft": 20000, "far": 0.3, "lot_coverage_percent": 15, "height": "2.5 stories / 30 ft"},
+        "R-5": [
+          {"variant": "one-family", "minimum_lot_sqft": 5000, "height": "2.5 stories / 30 ft"},
+          {"variant": "two-family", "minimum_lot_sqft": 6000, "height": "2.5 stories / 30 ft"},
+          {"variant": "Appendix B density variant", "minimum_lot_sqft": 9000, "height": "2.5 stories / 30 ft"}
+        ],
+        "R-6": [
+          {"variant": "one-family", "minimum_lot_sqft": 5000, "far": 0.65, "lot_coverage_percent": 25, "height": "2.5 stories / 30 ft"},
+          {"variant": "two-family", "minimum_lot_sqft": 6000, "far": 0.7, "lot_coverage_percent": 25, "height": "2.5 stories / 30 ft"}
+        ],
+        "R-7 1/2": {"minimum_lot_sqft": 7500, "far": 0.6, "lot_coverage_percent": 25, "height": "2.5 stories / 30 ft"},
+        "R-7½": {"minimum_lot_sqft": 7500, "far": 0.6, "lot_coverage_percent": 25, "height": "2.5 stories / 30 ft"},
+        "RA-1": {"minimum_lot_sqft": 43560, "far": 0.25, "lot_coverage_percent": 15, "height": "3 stories / 35 ft"},
+        "RA-2": {"minimum_lot_sqft": 87120, "far": 0.2, "lot_coverage_percent": 10, "height": "3 stories / 35 ft"},
+        "RA-3": {"minimum_lot_sqft": 130680, "far": 0.15, "lot_coverage_percent": 10, "height": "3 stories / 35 ft"},
+        "RM-1": {"minimum_lot_sqft": 5000, "lot_coverage_percent": 25, "height": "2.5 stories / 30 ft"},
+        "RM-F": {"minimum_lot_sqft": 5000, "lot_coverage_percent": 30, "height": "4 stories / 40 ft"},
+        "R-MF": {"minimum_lot_sqft": 5000, "lot_coverage_percent": 30, "height": "4 stories / 40 ft"}
+      }
+    }
+  },
+  "batch_engines": [
+    {
+      "key": "assessor",
+      "adapter": "tabular_municipality",
+      "coverage_status": "complete",
+      "completion_basis": "The Connecticut delivery manifest reports 37,877 enumerated Stamford Vision parcels, 37,877 output records, zero failed PIDs, and successful completion on 2026-08-13.",
+      "config": {
+        "path": "F:/DealSynq/town-source-inventory/outputs/states/Connecticut/live_refresh_2026_08_14/assessor_to_2025_parcels/Stamford_town.csv",
+        "manifest_path": "F:/DealSynq/town-source-inventory/outputs/states/Connecticut/live_refresh_2026_08_14/assessor_to_2025_parcels/Stamford_town.manifest.json",
+        "address_suffix": ", Stamford, CT",
+        "property_name_template": "{address} Property",
+        "geometry_area_unit": "sq_ft",
+        "fields": {
+          "join_status": "join_status",
+          "parcel_id": "assessor_pid",
+          "secondary_parcel_id": "assessor_parcel_id",
+          "geometry_parcel_id": "parcel_Link",
+          "address": "assessor_situs_address",
+          "owner": "assessor_owner_name",
+          "zoning": "assessor_zoning_code",
+          "use_code": "assessor_UseCode",
+          "use_description": "assessor_UseCodeDescription",
+          "assessment_year": "assessor_assessment_year",
+          "assessed_land": "assessor_assessed_land",
+          "assessed_improvement": "assessor_assessed_improvement",
+          "assessed_total": "assessor_assessed_total",
+          "last_sale_date": "assessor_last_sale_date",
+          "last_sale_price": "assessor_last_sale_price",
+          "year_built": "assessor_year_built",
+          "building_area": "assessor_living_area",
+          "land_area": "assessor_bld_size_acres",
+          "geometry": "parcel_geometry_geojson",
+          "geometry_area": "parcel_Shape__Area",
+          "record_url": "assessor_source_url",
+          "record_retrieved_at": "assessor_source_checked_utc"
+        },
+        "extra_facts": [
+          {"field": "assessor_rooms", "category": "physical", "predicate": "room_count", "value_type": "integer", "source": "assessor"},
+          {"field": "assessor_bedrooms", "category": "physical", "predicate": "bedroom_count", "value_type": "integer", "source": "assessor"},
+          {"field": "assessor_bathrooms", "category": "physical", "predicate": "bathroom_count", "value_type": "number", "source": "assessor"},
+          {"field": "assessor_half_bathrooms", "category": "physical", "predicate": "half_bathroom_count", "value_type": "number", "source": "assessor"},
+          {"field": "assessor_BldCount", "category": "physical", "predicate": "building_count", "value_type": "integer", "source": "assessor"},
+          {"field": "assessor_bld_style", "category": "physical", "predicate": "building_style", "source": "assessor"},
+          {"field": "assessor_bld_stories", "category": "physical", "predicate": "story_count", "value_type": "number", "source": "assessor"},
+          {"field": "assessor_bld_parking_spaces", "category": "physical", "predicate": "assessor_parking_spaces", "value_type": "integer", "source": "assessor"},
+          {"field": "assessor_bld_residential_units", "category": "physical", "predicate": "residential_unit_count", "value_type": "integer", "source": "assessor"},
+          {"field": "assessor_bld_cmrcl_units", "category": "physical", "predicate": "commercial_unit_count", "value_type": "integer", "source": "assessor"},
+          {"field": "assessor_bld_heat_type", "category": "physical", "predicate": "heating_type", "source": "assessor"},
+          {"field": "assessor_bld_heat_fuel", "category": "physical", "predicate": "heating_fuel", "source": "assessor"},
+          {"field": "assessor_bld_roof_structure", "category": "physical", "predicate": "roof_structure", "source": "assessor"},
+          {"field": "assessor_bld_roof_cover", "category": "physical", "predicate": "roof_cover", "source": "assessor"},
+          {"field": "assessor_GenAppraisal", "category": "assessor", "predicate": "appraised_value", "value_type": "number", "unit": "usd", "source": "assessor"},
+          {"field": "assessor_bld_book_page", "category": "transaction", "predicate": "assessor_last_sale_book_page", "source": "assessor"},
+          {"field": "assessor_sale_instrument", "category": "transaction", "predicate": "assessor_last_sale_instrument_code", "source": "assessor"},
+          {"field": "assessor_sale_owner", "category": "transaction", "predicate": "assessor_last_sale_party", "source": "assessor"},
+          {"field": "parcel_Shape__Length", "category": "spatial", "predicate": "source_parcel_perimeter", "value_type": "number", "unit": "source_feet", "source": "parcel"},
+          {"field": "parcel_Collection_year", "category": "spatial", "predicate": "parcel_collection_year", "value_type": "integer", "unit": "year", "source": "parcel"}
+        ],
+        "transaction_document": {
+          "book_page_field": "assessor_bld_book_page",
+          "date_field": "assessor_last_sale_date",
+          "price_field": "assessor_last_sale_price",
+          "instrument_field": "assessor_sale_instrument",
+          "party_field": "assessor_sale_owner"
+        },
+        "assessor_source": {
+          "name": "Stamford Vision assessor",
+          "url": "https://gis.vgsi.com/stamfordct/",
+          "authority": "City of Stamford assessor",
+          "source_date": "2024",
+          "retrieved_at": "2026-08-13T23:27:24.100710+00:00",
+          "access_note": "Read-only consumption of the verified Connecticut delivery; individual record URLs and retrieval times are retained."
+        },
+        "parcel_source": {
+          "name": "Connecticut OPM 2025 parcel geometry",
+          "url": "https://services3.arcgis.com/3FL1kr7L4LvwA2Kb/arcgis/rest/services/Connecticut_CAMA_and_Parcel_Layer/FeatureServer/0",
+          "authority": "Connecticut Office of Policy and Management",
+          "source_date": "2025",
+          "retrieved_at": "2026-08-12T21:00:31.082290+00:00",
+          "access_note": "Verified statewide 2025 parcel geometry baseline joined by the Connecticut pipeline."
+        }
+      }
+    },
+    {
+      "key": "parcel_gis",
+      "adapter": "arcgis_municipality",
+      "coverage_status": "partial",
+      "reason": "The official City 2026 parcel-assessor service is downloaded once and joined to the full Stamford property index, then every configured City layer is evaluated locally for every property. Unmatched or geocode-only sites remain explicit and parcel geometry is not inferred.",
+      "config": {
+        "refresh_days": 7,
+        "timeout_seconds": 120,
+        "geocode_unmatched": true,
+        "parcel_layer": {
+          "key": "stamford_parcels_assessor_20260130",
+          "label": "City of Stamford 2026 parcel-assessor join",
+          "url": "https://services3.arcgis.com/V28nrLFIbcYZbnPl/arcgis/rest/services/Parcels_AssessorJoin_20260130/FeatureServer/0",
+          "identifier_fields": ["ParcelID", "AccountNumber", "UNQ_CARD", "GISTag"],
+          "address_field": "PropertyAddress",
+          "address_suffix": ", Stamford, CT",
+          "out_fields": ["OBJECTID", "ParcelID", "AccountNumber", "UNQ_CARD", "GISTag", "Unit", "PropertyAddress", "Owner", "StateUse", "StateUseDescription", "Shape__Area", "Shape__Length"],
+          "attribute_fields": ["OBJECTID", "ParcelID", "AccountNumber", "UNQ_CARD", "GISTag", "Unit", "PropertyAddress", "Owner", "StateUse", "StateUseDescription", "Shape__Area", "Shape__Length"],
+          "source": {
+            "name": "City of Stamford Parcels AssessorJoin 20260130",
+            "authority": "Official City of Stamford ArcGIS publication",
+            "source_date": "2026-01-30",
+            "access_note": "Public ArcGIS feature service joined only by exact official identifiers or exact normalized situs address."
+          }
+        },
+        "layers": [
+          {
+            "key": "stamford_zoning_2026",
+            "label": "City of Stamford zoning",
+            "url": "https://services3.arcgis.com/V28nrLFIbcYZbnPl/arcgis/rest/services/City_of_Stamford_Zoning/FeatureServer/0",
+            "mode": "intersection",
+            "category": "zoning",
+            "predicate": "official_city_zoning_map_intersection",
+            "out_fields": ["OBJECTID", "ZONE_Type", "ZoningDistrict", "ZoningDescription", "DesignDistrict", "DesignDistrictDescription", "last_edited_date"],
+            "record_fields": ["OBJECTID", "ZONE_Type", "ZoningDistrict", "ZoningDescription", "DesignDistrict", "DesignDistrictDescription", "last_edited_date"],
+            "max_records": 8,
+            "confidence": 0.95,
+            "limitation": "The City identifies its interactive zoning map as general-reference evidence, not an official zoning determination.",
+            "source": {"name": "City of Stamford zoning GIS", "url": "https://www.stamfordct.gov/government/boards-commissions/zoning-board/zoning-regulations", "authority": "Official City of Stamford GIS publication", "source_date": "Map amendments through 2026-05-12"}
+          },
+          {
+            "key": "stamford_comprehensive_plan_2035",
+            "label": "Stamford Comprehensive Plan 2035",
+            "url": "https://services3.arcgis.com/V28nrLFIbcYZbnPl/arcgis/rest/services/Comprehensive_Plan_2035/FeatureServer/0",
+            "mode": "intersection",
+            "category": "zoning",
+            "predicate": "comprehensive_plan_2035_intersection",
+            "out_fields": ["*"],
+            "max_records": 8,
+            "confidence": 0.94,
+            "limitation": "Comprehensive-plan designation is policy context and is not a parcel-specific zoning approval.",
+            "source": {"name": "Stamford Comprehensive Plan 2035 GIS", "authority": "Official City of Stamford GIS publication", "source_date": "Adopted 2025-09-30"}
+          },
+          {
+            "key": "stamford_land_use",
+            "label": "Stamford official land-use inventory",
+            "url": "https://services3.arcgis.com/V28nrLFIbcYZbnPl/arcgis/rest/services/Stamford_Land_Use/FeatureServer/0",
+            "mode": "intersection",
+            "category": "zoning",
+            "predicate": "official_city_land_use_intersection",
+            "out_fields": ["OBJECTID", "UNQ_CARD", "LANDUSE_ORGANIZED_DATA_csv_LAND", "LANDUSE_ORGANIZED_DATA_csv_Owne", "LANDUSE_ORGANIZED_DATA_csv_Loca", "LANDUSE_ORGANIZED_DATA_csv_NEW_", "LANDUSE_ORGANIZED_DATA_csv_NEW1"],
+            "record_fields": ["OBJECTID", "UNQ_CARD", "LANDUSE_ORGANIZED_DATA_csv_LAND", "LANDUSE_ORGANIZED_DATA_csv_Owne", "LANDUSE_ORGANIZED_DATA_csv_Loca", "LANDUSE_ORGANIZED_DATA_csv_NEW_", "LANDUSE_ORGANIZED_DATA_csv_NEW1"],
+            "max_records": 8,
+            "limitation": "Land-use inventory attributes are contextual observations and do not establish a permitted use, zoning compliance, or a development right.",
+            "source": {"name": "Stamford Land Use GIS", "authority": "Official City of Stamford GIS publication"}
+          },
+          {
+            "key": "stamford_architectural_review_district",
+            "label": "Stamford Architectural Review Design District",
+            "url": "https://services3.arcgis.com/V28nrLFIbcYZbnPl/arcgis/rest/services/ArchitecturalReviewDesignDistrict/FeatureServer/0",
+            "mode": "intersection",
+            "category": "zoning",
+            "predicate": "architectural_review_design_district_intersection",
+            "out_fields": ["*"],
+            "max_records": 4,
+            "limitation": "Mapped design-district intersection flags an additional review regime; project applicability requires official review.",
+            "source": {"name": "Stamford Architectural Review Design District GIS", "authority": "Official City of Stamford GIS publication"}
+          },
+          {
+            "key": "stamford_aquifer_protection",
+            "label": "Stamford aquifer protection areas",
+            "url": "https://services3.arcgis.com/V28nrLFIbcYZbnPl/arcgis/rest/services/AquiferProtectionArea/FeatureServer/0",
+            "mode": "intersection",
+            "category": "environmental",
+            "predicate": "city_aquifer_protection_intersection",
+            "out_fields": ["*"],
+            "max_records": 6,
+            "limitation": "A GIS screen does not replace regulatory or environmental review.",
+            "source": {"name": "Stamford aquifer protection GIS", "authority": "Official City of Stamford GIS publication"}
+          },
+          {
+            "key": "stamford_coastal_area",
+            "label": "Stamford coastal area management",
+            "url": "https://services3.arcgis.com/V28nrLFIbcYZbnPl/arcgis/rest/services/Coastal_Area_Management/FeatureServer/0",
+            "mode": "intersection",
+            "category": "environmental",
+            "predicate": "city_coastal_area_intersection",
+            "out_fields": ["*"],
+            "max_records": 6,
+            "limitation": "Mapped coastal-area intersection is a screening result, not a coastal-site-plan determination.",
+            "source": {"name": "Stamford coastal area management GIS", "authority": "Official City of Stamford GIS publication"}
+          },
+          {
+            "key": "ct_brownfields_2025",
+            "label": "Connecticut brownfields inventory 2025",
+            "url": "https://services1.arcgis.com/FjPcSmEFuDYlIdKC/arcgis/rest/services/Brownfields_Final_2025/FeatureServer/0",
+            "where": "Site_Town='Stamford'",
+            "mode": "proximity",
+            "radius_m": 1609.344,
+            "category": "environmental",
+            "predicate": "nearby_ct_brownfields_screen",
+            "out_fields": ["OBJECTID", "Site_Town", "Site_Name", "Site_Addre", "Site_Parce", "Parcel_Acr", "Program", "Program_Ap", "Funding_So", "Planning_R"],
+            "record_fields": ["OBJECTID", "Site_Town", "Site_Name", "Site_Addre", "Site_Parce", "Parcel_Acr", "Program", "Program_Ap", "Funding_So", "Planning_R"],
+            "max_records": 20,
+            "limitation": "Inventory proximity is not a Phase I ESA, a release determination, or evidence that the subject property is contaminated.",
+            "source": {"name": "Connecticut Brownfields Inventory 2025", "authority": "Connecticut Department of Energy and Environmental Protection", "source_date": "2025"}
+          },
+          {
+            "key": "stamford_national_historic_districts",
+            "label": "Stamford National Register historic districts",
+            "url": "https://services3.arcgis.com/V28nrLFIbcYZbnPl/arcgis/rest/services/National_Historic_Districts/FeatureServer/0",
+            "mode": "intersection",
+            "category": "zoning",
+            "predicate": "national_historic_district_intersection",
+            "out_fields": ["OBJECTID", "DistrictType", "Name", "Town", "Year_", "comments", "pdfname1", "pdfname2"],
+            "max_records": 6,
+            "limitation": "District intersection is a cultural-resource screen; contributing status and project review require record-specific confirmation.",
+            "source": {"name": "Stamford National Register Districts GIS", "authority": "Official City of Stamford GIS publication"}
+          },
+          {
+            "key": "stamford_state_historic_districts",
+            "label": "Stamford state historic districts",
+            "url": "https://services3.arcgis.com/V28nrLFIbcYZbnPl/arcgis/rest/services/State_Historic_Districts/FeatureServer/0",
+            "mode": "intersection",
+            "category": "zoning",
+            "predicate": "state_historic_district_screen",
+            "out_fields": ["FID", "DistrictTy", "Name", "comments"],
+            "record_fields": ["FID", "DistrictTy", "Name", "comments"],
+            "max_records": 4,
+            "limitation": "Mapped intersection is a screening flag; the applicable review authority and project requirements require official confirmation.",
+            "source": {"name": "Stamford State Historic Districts GIS", "authority": "Official City of Stamford GIS publication"}
+          },
+          {
+            "key": "stamford_building_footprints",
+            "label": "Stamford building footprints",
+            "url": "https://services3.arcgis.com/V28nrLFIbcYZbnPl/arcgis/rest/services/Building_Footprints/FeatureServer/1",
+            "mode": "intersection",
+            "category": "physical",
+            "predicate": "official_city_building_footprint_intersections",
+            "out_fields": ["OBJECTID", "Type", "Shape__Area", "Shape__Length"],
+            "record_fields": ["OBJECTID", "Type", "Shape__Area", "Shape__Length"],
+            "max_records": 20,
+            "limitation": "Footprint intersections do not establish gross building area, occupancy, condition, or survey accuracy.",
+            "source": {"name": "City of Stamford Building Footprints GIS", "authority": "Official City of Stamford GIS publication"},
+            "entity": {"type": "building_footprint", "id_field": "OBJECTID", "name_field": "Type", "property_role": "building_footprint", "relationship_type": "located_at", "attribute_fields": ["OBJECTID", "Type", "Shape__Area", "Shape__Length"]}
+          },
+          {
+            "key": "stamford_development_pipeline",
+            "label": "Stamford master development list",
+            "url": "https://services3.arcgis.com/V28nrLFIbcYZbnPl/arcgis/rest/services/Master_Development_List/FeatureServer/0",
+            "mode": "proximity",
+            "radius_m": 1609.344,
+            "category": "permits_planning",
+            "predicate": "surrounding_development_pipeline",
+            "out_fields": ["ObjectId", "Project_Name", "Address", "Developer_Owner", "Project_Status", "CO_Date__1st_PCO_", "Building_Permit_Date", "Approval_Date", "ZB_application__", "Development_Use", "Development_Type", "Total_Units", "Office_sf", "retail_sf", "industrial_sf", "other_sf", "Parking"],
+            "record_fields": ["ObjectId", "Project_Name", "Address", "Developer_Owner", "Project_Status", "CO_Date__1st_PCO_", "Building_Permit_Date", "Approval_Date", "ZB_application__", "Development_Use", "Development_Type", "Total_Units", "Office_sf", "retail_sf", "industrial_sf", "other_sf", "Parking"],
+            "max_records": 15,
+            "limitation": "The master development list covers major tracked projects, not the complete permit, CO, variance, application, or enforcement register.",
+            "source": {"name": "City of Stamford Master Development List", "authority": "Official City of Stamford economic-development GIS publication"},
+            "entity": {"type": "development_case", "id_field": "ObjectId", "name_field": "Project_Name", "property_role": "surrounding_development", "relationship_type": "nearby_to", "attribute_fields": ["Address", "Developer_Owner", "Project_Status", "Building_Permit_Date", "Approval_Date", "ZB_application__", "Development_Use", "Development_Type", "Total_Units"]}
+          },
+          {
+            "key": "stamford_commercial_leases_2026",
+            "label": "Stamford 2026 commercial lease observations",
+            "url": "https://services3.arcgis.com/V28nrLFIbcYZbnPl/arcgis/rest/services/CommercialLeases_2026_p/FeatureServer/0",
+            "mode": "proximity",
+            "radius_m": 50,
+            "category": "market",
+            "predicate": "official_city_commercial_lease_observations",
+            "fact_class": "reported",
+            "confidence": 0.85,
+            "out_fields": ["OBJECTID", "Address", "Tenant_Name", "SF_Occupied", "Floor", "Space_Use", "Moved_In", "Commencement", "Occupancy_Type", "Rent_SF_year", "Rent_Type", "Employees", "Industry", "Building_Name", "Property_Type", "Landlord", "Signed", "Suite"],
+            "record_fields": ["OBJECTID", "Address", "Tenant_Name", "SF_Occupied", "Floor", "Space_Use", "Moved_In", "Commencement", "Occupancy_Type", "Rent_SF_year", "Rent_Type", "Employees", "Industry", "Building_Name", "Property_Type", "Landlord", "Signed", "Suite"],
+            "max_records": 20,
+            "limitation": "City-published points are current screening observations, not a complete rent roll, lease abstract, or historical tenant census.",
+            "source": {"name": "City of Stamford 2026 Commercial Leases GIS", "url": "https://www.choosestamford.com/data-center/commercial-leases-map", "authority": "Official City of Stamford Office of Economic Development publication", "source_date": "2026"},
+            "entity": {"type": "tenant", "id_field": "OBJECTID", "name_field": "Tenant_Name", "property_role": "tenant_observation", "relationship_type": "nearby_to", "attribute_fields": ["Address", "SF_Occupied", "Floor", "Space_Use", "Occupancy_Type", "Rent_SF_year", "Rent_Type", "Industry", "Building_Name", "Property_Type", "Landlord", "Suite"], "temporal_state": {"type": "tenant_occurrence", "valid_from_fields": ["Moved_In", "Commencement", "Signed"], "value_fields": ["Address", "Tenant_Name", "SF_Occupied", "Floor", "Space_Use", "Occupancy_Type", "Rent_SF_year", "Rent_Type", "Industry", "Building_Name", "Property_Type", "Landlord", "Suite"]}}
+          },
+          {
+            "key": "stamford_top_commercial_leases_2024_q3",
+            "label": "Stamford top commercial leases 2024 Q3",
+            "url": "https://services3.arcgis.com/V28nrLFIbcYZbnPl/arcgis/rest/services/Top_25_Commercial_Leases_Q324/FeatureServer/0",
+            "mode": "proximity",
+            "radius_m": 50,
+            "category": "market",
+            "predicate": "official_city_historical_commercial_lease_observations",
+            "fact_class": "reported",
+            "confidence": 0.82,
+            "out_fields": ["OBJECTID", "USER_Tenant_Name", "USER_Address", "USER_SF_Occupied", "USER_Moved_In", "USER_Commencement", "USER_Occupancy_Type", "USER_Rent_SF_Yr", "USER_Term__years_"],
+            "record_fields": ["OBJECTID", "USER_Tenant_Name", "USER_Address", "USER_SF_Occupied", "USER_Moved_In", "USER_Commencement", "USER_Occupancy_Type", "USER_Rent_SF_Yr", "USER_Term__years_"],
+            "max_records": 25,
+            "limitation": "This City-published top-25 snapshot is historical market evidence, not a complete tenant census or lease abstract.",
+            "source": {"name": "City of Stamford Top 25 Commercial Leases Q3 2024 GIS", "authority": "Official City of Stamford Office of Economic Development publication", "source_date": "2024-Q3"},
+            "entity": {"type": "tenant", "id_field": "OBJECTID", "name_field": "USER_Tenant_Name", "property_role": "historical_tenant_observation", "relationship_type": "nearby_to", "attribute_fields": ["USER_Address", "USER_SF_Occupied", "USER_Occupancy_Type", "USER_Rent_SF_Yr", "USER_Term__years_"], "temporal_state": {"type": "tenant_occurrence", "valid_from_fields": ["USER_Moved_In", "USER_Commencement"], "value_fields": ["USER_Tenant_Name", "USER_Address", "USER_SF_Occupied", "USER_Occupancy_Type", "USER_Rent_SF_Yr", "USER_Term__years_"]}}
+          },
+          {
+            "key": "stamford_commercial_inventory_2026",
+            "label": "Stamford 2026 commercial inventory",
+            "url": "https://services3.arcgis.com/V28nrLFIbcYZbnPl/arcgis/rest/services/CommercialInventory_2026Q_P_v3/FeatureServer/0",
+            "mode": "proximity",
+            "radius_m": 1609.344,
+            "category": "market",
+            "predicate": "official_city_commercial_inventory_observations",
+            "fact_class": "reported",
+            "confidence": 0.85,
+            "out_fields": ["OBJECTID", "Property_Address", "Property_Name", "Property_Type", "Building_Class", "Building_Status", "RBA", "Total_Available_Space__SF_", "Rent_SF_Yr", "For_Sale_Price", "For_Sale_Status", "Last_Sale_Date", "Last_Sale_Price", "Percent_Leased", "Year_Built", "Year_Renovated", "Parking_Ratio", "Tenancy", "In_SFHA"],
+            "record_fields": ["OBJECTID", "Property_Address", "Property_Name", "Property_Type", "Building_Class", "Building_Status", "RBA", "Total_Available_Space__SF_", "Rent_SF_Yr", "For_Sale_Price", "For_Sale_Status", "Last_Sale_Date", "Last_Sale_Price", "Percent_Leased", "Year_Built", "Year_Renovated", "Parking_Ratio", "Tenancy", "In_SFHA"],
+            "max_records": 15,
+            "limitation": "City inventory points are screening observations, not verified listings, appraisals, or complete market coverage.",
+            "source": {"name": "City of Stamford 2026 Commercial Inventory GIS", "url": "https://www.choosestamford.com/data-center/commercial-office-inventory-map", "authority": "Official City of Stamford Office of Economic Development publication", "source_date": "2026"},
+            "entity": {"type": "market_comparable_listing", "id_field": "OBJECTID", "name_field": "Property_Name", "property_role": "nearby_market_observation", "relationship_type": "nearby_to", "attribute_fields": ["Property_Address", "Property_Type", "Building_Class", "Building_Status", "RBA", "Total_Available_Space__SF_", "Rent_SF_Yr", "For_Sale_Price", "For_Sale_Status", "Last_Sale_Date", "Last_Sale_Price", "Percent_Leased"]}
+          },
+          {
+            "key": "stamford_sales_2024_2025",
+            "label": "Stamford 2024-2025 property sales",
+            "url": "https://services3.arcgis.com/V28nrLFIbcYZbnPl/arcgis/rest/services/All_Sales_2024_2025/FeatureServer/0",
+            "mode": "proximity",
+            "radius_m": 1609.344,
+            "category": "market",
+            "predicate": "official_city_sales_comparable_screen",
+            "out_fields": ["OBJECTID", "PropertyType", "Number", "Unit", "StreetName", "SaleDate", "SalePrice", "LivingArea", "AccountDetails"],
+            "record_fields": ["OBJECTID", "PropertyType", "Number", "Unit", "StreetName", "SaleDate", "SalePrice", "LivingArea", "AccountDetails"],
+            "max_records": 20,
+            "limitation": "Nearby City-published sales are unadjusted observations, not selected or normalized appraisal comparables.",
+            "source": {"name": "City of Stamford All Sales 2024-2025 GIS", "authority": "Official City of Stamford GIS publication", "source_date": "2024-2025"}
+          },
+          {
+            "key": "stamford_sales_2023_2024",
+            "label": "Stamford 2023-2024 property sales",
+            "url": "https://services3.arcgis.com/V28nrLFIbcYZbnPl/arcgis/rest/services/All_Sales_2023_2024/FeatureServer/0",
+            "mode": "proximity",
+            "radius_m": 1609.344,
+            "category": "market",
+            "predicate": "official_city_historical_sales_screen",
+            "out_fields": ["OBJECTID", "PropertyType", "Number", "Unit", "StreetName", "SaleDate", "SalePrice", "LivingArea", "AccountDetails"],
+            "record_fields": ["OBJECTID", "PropertyType", "Number", "Unit", "StreetName", "SaleDate", "SalePrice", "LivingArea", "AccountDetails"],
+            "max_records": 20,
+            "limitation": "Nearby City-published sales are unadjusted observations, not selected or normalized appraisal comparables.",
+            "source": {"name": "City of Stamford All Sales 2023-2024 GIS", "authority": "Official City of Stamford GIS publication", "source_date": "2023-2024"}
+          },
+          {
+            "key": "stamford_sales_2022",
+            "label": "Stamford 2022 property sales",
+            "url": "https://services3.arcgis.com/V28nrLFIbcYZbnPl/arcgis/rest/services/City_of_Stamford_Sales_2022/FeatureServer/0",
+            "mode": "proximity",
+            "radius_m": 1609.344,
+            "category": "market",
+            "predicate": "official_city_historical_sales_screen",
+            "out_fields": ["OBJECTID_1", "SLH_SALE_DATE", "SLH_PRICE", "REM_PRCL_LOCN_NUM", "REM_PRCL_LOCN_STREET", "REM_MBLU_UNIT", "CNS_AREA_LIVING", "CNS_STYLE_DESC", "Vision_URL", "Addr_Full"],
+            "record_fields": ["OBJECTID_1", "SLH_SALE_DATE", "SLH_PRICE", "REM_PRCL_LOCN_NUM", "REM_PRCL_LOCN_STREET", "REM_MBLU_UNIT", "CNS_AREA_LIVING", "CNS_STYLE_DESC", "Vision_URL", "Addr_Full"],
+            "max_records": 20,
+            "limitation": "Nearby City-published sales are unadjusted observations, not selected or normalized appraisal comparables.",
+            "source": {"name": "City of Stamford Sales 2022 GIS", "authority": "Official City of Stamford GIS publication", "source_date": "2022"}
+          },
+          {
+            "key": "stamford_paving_status",
+            "label": "Stamford paving-status street network",
+            "url": "https://services3.arcgis.com/V28nrLFIbcYZbnPl/arcgis/rest/services/Paving_Status_Map/FeatureServer/0",
+            "mode": "proximity",
+            "radius_m": 30,
+            "category": "access",
+            "predicate": "nearby_official_city_street_screen",
+            "out_fields": ["FID", "PaveRoad", "PaveLimits", "PaveYear", "PaveResp", "PaveStatus", "ClassDirOp", "Shape__Length"],
+            "record_fields": ["FID", "PaveRoad", "PaveLimits", "PaveYear", "PaveResp", "PaveStatus", "ClassDirOp", "Shape__Length"],
+            "max_records": 10,
+            "limitation": "Street-segment proximity does not establish legal access, frontage, or curb-cut approval.",
+            "source": {"name": "City of Stamford Paving Status Map", "authority": "Official City of Stamford Operations GIS publication"}
+          },
+          {
+            "key": "stamford_bus_stops",
+            "label": "Stamford bus stops",
+            "url": "https://services3.arcgis.com/V28nrLFIbcYZbnPl/arcgis/rest/services/Stamford_Bus_Stops/FeatureServer/0",
+            "mode": "proximity",
+            "radius_m": 800,
+            "category": "access",
+            "predicate": "nearby_bus_stop_screen",
+            "out_fields": ["OBJECTID", "StopID", "StopCode", "StopName"],
+            "record_fields": ["OBJECTID", "StopID", "StopCode", "StopName"],
+            "max_records": 10,
+            "limitation": "Bus-stop proximity does not establish schedules, frequency, accessibility, or pedestrian access.",
+            "source": {"name": "City of Stamford Bus Stops GIS", "authority": "Official City of Stamford GIS publication"}
+          },
+          {
+            "key": "stamford_pedestrian_paths",
+            "label": "Stamford pedestrian paths",
+            "url": "https://services3.arcgis.com/V28nrLFIbcYZbnPl/arcgis/rest/services/Ped_Paths_Web_Layer/FeatureServer/0",
+            "mode": "proximity",
+            "radius_m": 400,
+            "category": "access",
+            "predicate": "nearby_pedestrian_path_screen",
+            "out_fields": ["OBJECTID", "ConnectingStreet1", "ConnectingStreet2", "Property", "TrailName", "Status", "ProjectName", "MajorGradeChange"],
+            "record_fields": ["OBJECTID", "ConnectingStreet1", "ConnectingStreet2", "Property", "TrailName", "Status", "ProjectName", "MajorGradeChange"],
+            "max_records": 10,
+            "limitation": "Path proximity does not establish public access rights, route condition, accessibility, or a legal connection to the property.",
+            "source": {"name": "Stamford Pedestrian Paths GIS", "authority": "Official City of Stamford GIS publication"}
+          },
+          {
+            "key": "ct_connected_sewer_service_area",
+            "label": "Connecticut connected sewer service areas",
+            "url": "https://services1.arcgis.com/FjPcSmEFuDYlIdKC/arcgis/rest/services/Connected_Sewer_Service_Areas/FeatureServer/0",
+            "where": "TOWN='Stamford'",
+            "mode": "intersection",
+            "category": "infrastructure",
+            "predicate": "ct_connected_sewer_service_area_screen",
+            "out_fields": ["OBJECTID", "TOWN", "Sewers", "SewerStatus", "TreatmentFacility", "PassThrough", "Supporting_Document"],
+            "record_fields": ["OBJECTID", "TOWN", "Sewers", "SewerStatus", "TreatmentFacility", "PassThrough", "Supporting_Document"],
+            "max_records": 5,
+            "limitation": "Service-area intersection does not establish an active lateral, connection right, invert feasibility, reserved treatment allocation, or property-specific capacity.",
+            "source": {"name": "Connecticut DEEP Connected Sewer Service Areas", "authority": "Connecticut Department of Energy and Environmental Protection"}
+          },
+          {
+            "key": "ct_community_public_water_service_area",
+            "label": "Connecticut community public-water service areas",
+            "url": "https://maps.ct.gov/arcgis/rest/services/Hosted/Buffered_Community_PWS_Service_Areas/FeatureServer/0",
+            "mode": "intersection",
+            "category": "infrastructure",
+            "predicate": "ct_community_public_water_service_area_screen",
+            "out_fields": ["fid", "objectid", "pws_name", "pwsid"],
+            "record_fields": ["fid", "objectid", "pws_name", "pwsid"],
+            "max_records": 5,
+            "limitation": "Mapped service-area intersection does not establish an active service, connection right, main size, pressure, fire flow, or property-specific capacity.",
+            "source": {"name": "Connecticut DPH Buffered Community Public Water Service Areas", "authority": "Connecticut Department of Public Health"}
+          },
+          {
+            "key": "stamford_stormwater_mains",
+            "label": "Stamford stormwater gravity mains",
+            "url": "https://stamfordgis.org/public/rest/services/FandODrainage/FeatureServer/13",
+            "mode": "proximity",
+            "radius_m": 50,
+            "category": "infrastructure",
+            "predicate": "nearby_city_stormwater_gravity_main_screen",
+            "out_fields": ["OBJECTID", "Enabled", "LifecycleStatus", "Material", "Diameter", "Width", "Height", "CrossSectionShape", "Slope", "FacilityID", "MainType", "OWNER"],
+            "record_fields": ["OBJECTID", "Enabled", "LifecycleStatus", "Material", "Diameter", "Width", "Height", "CrossSectionShape", "Slope", "FacilityID", "MainType", "OWNER"],
+            "max_records": 10,
+            "limitation": "Mapped storm-drain proximity does not establish a connection, drainage rights, condition, invert feasibility, or capacity.",
+            "source": {"name": "City of Stamford Stormwater Gravity Main GIS", "authority": "Official City of Stamford Engineering GIS publication"}
+          },
+          {
+            "key": "stamford_public_parking",
+            "label": "Stamford public garages and lots",
+            "url": "https://services3.arcgis.com/V28nrLFIbcYZbnPl/arcgis/rest/services/Stamford_CT_Public_Garages_And_Lots/FeatureServer/0",
+            "mode": "proximity",
+            "radius_m": 800,
+            "category": "access",
+            "predicate": "nearby_public_parking_screen",
+            "out_fields": ["*"],
+            "max_records": 8,
+            "limitation": "Nearby public parking does not establish dedicated rights or capacity for the subject property.",
+            "source": {"name": "City of Stamford public parking GIS", "authority": "Official City of Stamford GIS publication"}
+          },
+          {
+            "key": "stamford_enterprise_zone",
+            "label": "Stamford Enterprise Zone",
+            "url": "https://services3.arcgis.com/V28nrLFIbcYZbnPl/arcgis/rest/services/EnterpriseZone/FeatureServer/0",
+            "mode": "intersection",
+            "category": "market",
+            "predicate": "enterprise_zone_intersection",
+            "out_fields": ["*"],
+            "max_records": 4,
+            "limitation": "Mapped inclusion does not establish eligibility for any incentive or benefit.",
+            "source": {"name": "City of Stamford Enterprise Zone GIS", "authority": "Official City of Stamford GIS publication"}
+          },
+          {
+            "key": "stamford_opportunity_zones",
+            "label": "Stamford Opportunity Zones",
+            "url": "https://services3.arcgis.com/V28nrLFIbcYZbnPl/arcgis/rest/services/OpportunityZones/FeatureServer/0",
+            "mode": "intersection",
+            "category": "market",
+            "predicate": "opportunity_zone_intersection",
+            "out_fields": ["*"],
+            "max_records": 4,
+            "limitation": "Mapped tract inclusion does not establish transaction-specific tax treatment.",
+            "source": {"name": "City of Stamford Opportunity Zones GIS", "authority": "Official City of Stamford GIS publication"}
+          }
+        ],
+        "constant_facts": [
+          {
+            "category": "zoning",
+            "predicate": "official_zoning_regulations_reference",
+            "value": {"edition": "May 31, 2026", "district_rules_section": "Section 5", "land_use_schedule": "Appendix A", "central_business_district_schedule": "Appendix B", "status": "official_text_linked", "limitation": "A linked ordinance is not a parcel-specific interpretation; overlays, requested uses, special permits, nonconformities, bonuses, and project facts can change the applicable envelope."},
+            "confidence": 1.0,
+            "evidence_locator": "Official Stamford Zoning Regulations page, May 31 2026 edition",
+            "source": {"name": "Stamford Zoning Regulations", "url": "https://www.stamfordct.gov/government/boards-commissions/zoning-board/zoning-regulations", "authority": "City of Stamford Zoning Board", "source_date": "2026-05-31"}
+          },
+          {
+            "category": "infrastructure",
+            "predicate": "stamford_wpca_treatment_capacity_context",
+            "value": {"design_capacity_mgd": 24, "reported_2023_average_utilization": "under two-thirds of design capacity", "scope": "system-wide context", "limitation": "System-wide treatment capacity does not establish parcel connection rights, lateral feasibility, collection-system constraints, project allocation, or reserved capacity."},
+            "confidence": 0.98,
+            "evidence_locator": "Official Stamford WPCA design-capacity report and City development Q&A",
+            "source": {"name": "Stamford WPCA treatment capacity context", "url": "https://www.stamfordct.gov/government/operations/water-pollution-control-authority", "authority": "City of Stamford Water Pollution Control Authority", "source_date": "2023"}
+          }
+        ]
+      }
+    },
+    {
+      "key": "zoning",
+      "coverage_from": "parcel_gis",
+      "coverage_status": "partial",
+      "reason": "Every indexed property receives the official mapped district, plan and design-district screens plus configured Appendix B dimensional rules. Geometry-backed activations calculate a bounded FAR/coverage envelope where the district has an unambiguous published rule; Section 5, uses, overlays, approvals, bonuses, variances and nonconformities remain controlling diligence."
+    },
+    {
+      "key": "owner_entities",
+      "adapter": "ct_registry_municipality",
+      "coverage_status": "partial",
+      "reason": "Every assessor owner now receives a municipality-wide registry and active-UCC eligibility/result screen; business-like names are exact-matched against the official nightly Connecticut master, principal, agent, filing, and name-history datasets. Beneficial ownership and identity among similarly named parties remain unadjudicated.",
+      "config": {
+        "refresh_days": 1,
+        "timeout_seconds": 45,
+        "workers": 12,
+        "batch_size": 12
+      }
+    },
+    {
+      "key": "deeds",
+      "coverage_from": "assessor",
+      "coverage_status": "partial",
+      "reason": "Assessor-reported book/page, instrument code, party, price, and date observations are materialized as qualified recorded-document index evidence. The complete Stamford land-record index and deed instruments are not connected."
+    },
+    {
+      "key": "mortgages_liens",
+      "coverage_from": "owner_entities",
+      "coverage_status": "partial",
+      "reason": "Every assessor owner now receives an official active-UCC/other-lien eligibility/result screen; matched records are linked as debtor-name observations. This is not a property-title, mortgage, assignment, release, judgment, or collateral adjudication."
+    },
+    {
+      "key": "site_assembly",
+      "coverage_from": "assessor",
+      "coverage_status": "partial",
+      "reason": "Parcels are assembled by exact normalized situs address with explainable decisions; deed collateral, ownership adjacency, easements, and development-plan evidence are not yet used."
+    },
+    {
+      "key": "permits_planning",
+      "coverage_from": "parcel_gis",
+      "coverage_status": "partial",
+      "reason": "Every indexed property now receives a completed official master-development proximity screen. The City directs complete research across historical municipal records and its interactive OpenGov portal, which has no approved bulk interface."
+    },
+    {
+      "key": "hazards",
+      "coverage_from": "parcel_gis",
+      "coverage_status": "partial",
+      "reason": "Every indexed property now receives municipality-wide aquifer and coastal screens; geometry-backed activations add FEMA, EPA, wetlands, soils, elevation, structure, road, and risk-index screens. These are not environmental due diligence or a survey."
+    },
+    {
+      "key": "infrastructure",
+      "coverage_from": "parcel_gis",
+      "coverage_status": "partial",
+      "required": false,
+      "reason": "Every geometry-backed property receives official CTDEEP sewer-service-area and CTDPH community-water-service-area screens, City stormwater/access context, and Stamford WPCA system design-capacity context. These do not establish a parcel connection, main/lateral feasibility, pressure, fire flow, allocation, or reserved capacity."
+    }
+  ],
+  "on_demand_engines": [
+    {
+      "key": "stamford_official_web_discovery",
+      "adapter": "web_intelligence",
+      "required": false,
+      "live": false,
+      "config": {
+        "timeout_seconds": 60,
+        "providers": [
+          {
+            "id": "stamford_official_source_catalog",
+            "type": "manifest",
+            "authority": "Curated official public-source catalog; discovery candidates require source parsing",
+            "results": [
+              {"query_type": "identity", "url": "https://gis.vgsi.com/stamfordct/", "title": "City of Stamford property assessment search", "document_type": "official_property_search", "source_name": "Stamford Vision assessor", "authority": "City of Stamford assessor", "scope": "jurisdiction_reference"},
+              {"query_type": "official_documents", "url": "https://www.stamfordct.gov/government/operations/building-department/building-records", "title": "City of Stamford building records", "document_type": "permit_and_building_records_guidance", "source_name": "Stamford Building Department", "authority": "City of Stamford", "scope": "jurisdiction_reference"},
+              {"query_type": "official_documents", "url": "https://www.stamfordct.gov/government/boards-commissions/zoning-board/zoning-regulations", "title": "Stamford zoning regulations", "document_type": "zoning_regulations", "source_name": "Stamford Zoning Board", "authority": "City of Stamford", "scope": "jurisdiction_reference"},
+              {"query_type": "capital_stack", "url": "https://www.stamfordct.gov/government/town-clerk/land-records", "title": "City of Stamford land records", "document_type": "land_records_guidance", "source_name": "Stamford Town Clerk", "authority": "City of Stamford", "scope": "jurisdiction_reference"},
+              {"query_type": "capital_stack", "url": "https://portal.ct.gov/sots/business-services/bulk-data-and-images", "title": "Connecticut business registry and UCC bulk data", "document_type": "business_and_ucc_registry", "source_name": "Connecticut Secretary of the State", "authority": "State of Connecticut", "scope": "jurisdiction_reference"},
+              {"query_type": "tenant_history", "url": "https://www.choosestamford.com/data-center/commercial-leases-map", "title": "Stamford commercial leases map", "document_type": "commercial_lease_observations", "source_name": "Stamford Office of Economic Development", "authority": "City of Stamford", "scope": "jurisdiction_reference"},
+              {"query_type": "environmental", "url": "https://maps.cteco.uconn.edu/map-services/", "title": "Connecticut environmental map and feature services", "document_type": "environmental_gis_catalog", "source_name": "Connecticut Environmental Conditions Online", "authority": "Connecticut DEEP and UConn", "scope": "jurisdiction_reference"},
+              {"query_type": "market", "url": "https://services3.arcgis.com/V28nrLFIbcYZbnPl/arcgis/rest/services/All_Sales_2023_2024/FeatureServer/0", "title": "Stamford 2023-2024 official sales GIS", "document_type": "executed_sales_screen", "source_name": "City of Stamford sales GIS", "authority": "City of Stamford", "scope": "jurisdiction_reference"},
+              {"query_type": "parcel_identifier", "url": "https://gis.vgsi.com/stamfordct/", "title": "City of Stamford property assessment search", "document_type": "official_property_search", "source_name": "Stamford Vision assessor", "authority": "City of Stamford assessor", "scope": "jurisdiction_reference"},
+              {"query_type": "entity", "url": "https://service.ct.gov/business/s/onlinebusinesssearch", "title": "Connecticut business records search", "document_type": "business_registry_search", "source_name": "Connecticut Business Records Search", "authority": "Connecticut Secretary of the State", "scope": "jurisdiction_reference"}
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "key": "stamford_official_documents",
+      "adapter": "documents",
+      "required": false,
+      "live": true,
+      "config": {
+        "timeout_seconds": 120,
+        "items": [
+          {"url": "https://stamfordgis.org/public/rest/services/AGOL_Zoning/MapServer/3?f=pjson", "title": "Stamford Official Zoning Layer Definition", "document_type": "permit_or_entitlement", "source_name": "Stamford Zoning GIS Layer Definition", "authority": "City of Stamford GIS", "source_date": "2026", "refresh_days": 30, "confidence": 1.0, "scope": "jurisdiction_reference"},
+          {"url": "https://services3.arcgis.com/V28nrLFIbcYZbnPl/arcgis/rest/services/Stamford_Land_Use/FeatureServer/0?f=pjson", "title": "Stamford Official Land Use Layer Definition", "document_type": "property_report", "source_name": "Stamford Land Use GIS Layer Definition", "authority": "City of Stamford GIS", "refresh_days": 30, "confidence": 1.0, "scope": "jurisdiction_reference"},
+          {"url": "https://services3.arcgis.com/V28nrLFIbcYZbnPl/arcgis/rest/services/Master_Development_List/FeatureServer/0?f=pjson", "title": "Stamford Master Development List Layer Definition", "document_type": "permit_or_entitlement", "source_name": "Stamford Master Development List GIS Definition", "authority": "City of Stamford Office of Economic Development", "refresh_days": 30, "confidence": 1.0, "scope": "jurisdiction_reference"},
+          {"url": "https://services3.arcgis.com/V28nrLFIbcYZbnPl/arcgis/rest/services/All_Sales_2023_2024/FeatureServer/0?f=pjson", "title": "Stamford Official Sales Layer Definition 2023-2024", "document_type": "deed_or_transfer", "source_name": "Stamford All Sales 2023-2024 GIS Definition", "authority": "City of Stamford GIS", "source_date": "2023-2024", "refresh_days": 30, "confidence": 1.0, "scope": "jurisdiction_reference"},
+          {"url": "https://services1.arcgis.com/FjPcSmEFuDYlIdKC/arcgis/rest/services/Brownfields_Final_2025/FeatureServer/0?f=pjson", "title": "Connecticut Brownfields Inventory Layer Definition 2025", "document_type": "environmental_report", "source_name": "Connecticut Brownfields Inventory GIS Definition", "authority": "Connecticut Department of Energy and Environmental Protection", "source_date": "2025", "refresh_days": 30, "confidence": 1.0, "scope": "jurisdiction_reference"}
+        ]
+      }
+    },
+    {
+      "key": "national_public_context",
+      "adapter": "national_public",
+      "required": false,
+      "live": true,
+      "config": {
+        "enabled": true,
+        "required": false,
+        "refresh_days": 30,
+        "epa_radius_miles": 1,
+        "timeout_seconds": 90
+      }
+    },
+    {
+      "key": "connecticut_business_and_ucc_registry",
+      "adapter": "ct_registry",
+      "required": false,
+      "live": true,
+      "config": {
+        "refresh_days": 1,
+        "timeout_seconds": 60
+      }
+    },
+    {
+      "key": "stamford_official_gis_context",
+      "adapter": "arcgis_context",
+      "required": false,
+      "live": true,
+      "config": {
+        "timeout_seconds": 60,
+        "layers": [
+          {
+            "key": "stamford_zoning",
+            "label": "City of Stamford GIS zoning",
+            "url": "https://stamfordgis.org/public/rest/services/AGOL_Zoning/MapServer/3",
+            "category": "zoning",
+            "predicate": "official_city_zoning_map_intersection",
+            "out_fields": ["OBJECTID", "ZoningDistrict", "ZoningDescription", "DesignDistrict", "DesignDistrictDescription"],
+            "limitation": "The City states that this interactive layer is for general reference and is not an official zoning determination.",
+            "capabilities": [
+              {
+                "capability": "zoning_gis",
+                "status": "working",
+                "reason": "The official City zoning polygon layer is intersected with the sourced parcel geometry; the City limits it to general reference."
+              },
+              {
+                "capability": "zoning_ordinance",
+                "status": "working",
+                "reason": "Current Appendix B dimensional standards are converted into configured district rules and applied as a bounded parcel-level capacity screen; Section 5, overlays, bonuses, variances and agency interpretation remain controlling limitations."
+              }
+            ],
+            "source": {
+              "name": "City of Stamford GIS zoning map",
+              "url": "https://www.stamfordct.gov/government/operations/land-use-bureau-planning-zoning-housing-epb/maps",
+              "authority": "Official City of Stamford GIS publication with general-reference disclaimer",
+              "source_date": "Map amendments through 2026-05-12"
+            }
+          },
+          {
+            "key": "stamford_comprehensive_plan",
+            "label": "Stamford Comprehensive Plan 2035",
+            "url": "https://services3.arcgis.com/V28nrLFIbcYZbnPl/arcgis/rest/services/Comprehensive_Plan_2035/FeatureServer/0",
+            "category": "zoning",
+            "predicate": "comprehensive_plan_2035_intersection",
+            "out_fields": ["*"],
+            "source": {
+              "name": "City of Stamford Comprehensive Plan 2035 GIS",
+              "authority": "Official City of Stamford GIS publication",
+              "source_date": "Adopted 2025-09-30"
+            }
+          },
+          {
+            "key": "stamford_land_use",
+            "label": "Stamford official land-use inventory",
+            "url": "https://services3.arcgis.com/V28nrLFIbcYZbnPl/arcgis/rest/services/Stamford_Land_Use/FeatureServer/0",
+            "category": "zoning",
+            "predicate": "official_city_land_use_intersection",
+            "out_fields": ["OBJECTID", "UNQ_CARD", "LANDUSE_ORGANIZED_DATA_csv_LAND", "LANDUSE_ORGANIZED_DATA_csv_Owne", "LANDUSE_ORGANIZED_DATA_csv_Loca", "LANDUSE_ORGANIZED_DATA_csv_NEW_", "LANDUSE_ORGANIZED_DATA_csv_NEW1"],
+            "limitation": "Land-use inventory attributes are contextual observations and do not establish a permitted use, zoning compliance, or a development right.",
+            "source": {"name": "Stamford Land Use GIS", "authority": "Official City of Stamford GIS publication"}
+          },
+          {
+            "key": "stamford_state_historic_districts",
+            "label": "Stamford state historic districts",
+            "url": "https://services3.arcgis.com/V28nrLFIbcYZbnPl/arcgis/rest/services/State_Historic_Districts/FeatureServer/0",
+            "category": "zoning",
+            "predicate": "state_historic_district_screen",
+            "out_fields": ["FID", "DistrictTy", "Name", "comments"],
+            "limitation": "Mapped intersection is a screening flag; the applicable review authority and project requirements require official confirmation.",
+            "source": {"name": "Stamford State Historic Districts GIS", "authority": "Official City of Stamford GIS publication"}
+          },
+          {
+            "key": "stamford_aquifer_protection",
+            "label": "Stamford aquifer protection areas",
+            "url": "https://stamfordgis.org/public/rest/services/AGOL_Zoning/MapServer/1",
+            "category": "environmental",
+            "predicate": "city_aquifer_protection_intersection",
+            "out_fields": ["*"],
+            "source": {"name": "City of Stamford aquifer protection GIS", "authority": "Official City of Stamford GIS publication"}
+          },
+          {
+            "key": "stamford_coastal_area",
+            "label": "Stamford coastal area management",
+            "url": "https://stamfordgis.org/public/rest/services/AGOL_Zoning/MapServer/2",
+            "category": "environmental",
+            "predicate": "city_coastal_area_intersection",
+            "out_fields": ["*"],
+            "source": {"name": "City of Stamford coastal area management GIS", "authority": "Official City of Stamford GIS publication"}
+          },
+          {
+            "key": "stamford_parcel_crosscheck",
+            "label": "City of Stamford parcel GIS",
+            "url": "https://stamfordgis.org/public/rest/services/AGOL_Zoning/MapServer/7",
+            "category": "spatial",
+            "predicate": "city_parcel_map_crosscheck",
+            "out_fields": ["OBJECTID", "UNQ_CARD", "ZipCode", "FireMarshal", "DistrictId", "ParcelLong", "ParcelLat"],
+            "source": {"name": "City of Stamford parcel GIS", "authority": "Official City of Stamford GIS publication"}
+          },
+          {
+            "key": "stamford_development_pipeline",
+            "label": "City of Stamford master development list",
+            "url": "https://services3.arcgis.com/V28nrLFIbcYZbnPl/arcgis/rest/services/Master_Development_List/FeatureServer/0",
+            "category": "permits_planning",
+            "predicate": "surrounding_development_pipeline",
+            "radius_m": 1609.344,
+            "out_fields": ["ObjectId", "Project_Name", "Address", "Developer_Owner", "Project_Status", "CO_Date__1st_PCO_", "Building_Permit_Date", "Approval_Date", "ZB_application__", "Development_Use", "Development_Type", "Total_Units", "Office_sf", "retail_sf", "industrial_sf", "other_sf", "Parking"],
+            "limitation": "The master development list covers major tracked projects; it is not the complete building-permit or certificate-of-occupancy register.",
+            "capabilities": [
+              {
+                "capability": "development_pipeline",
+                "status": "working",
+                "reason": "The official City master development list is queryable at activation and covers major tracked projects, but not the complete permit register."
+              },
+              {
+                "capability": "planning_applications",
+                "status": "partial",
+                "reason": "Major tracked projects include approval and Zoning Board application fields; the complete application register is not bulk-accessible here."
+              },
+              {
+                "capability": "building_permits",
+                "status": "partial",
+                "reason": "Major tracked projects include building-permit dates; this is not the complete OpenGov permit register."
+              },
+              {
+                "capability": "certificates_of_occupancy",
+                "status": "partial",
+                "reason": "Major tracked projects include first partial-certificate-of-occupancy dates; this is not the complete certificate register."
+              }
+            ],
+            "source": {"name": "City of Stamford Master Development List", "authority": "Official City of Stamford economic-development GIS publication"},
+            "entity": {
+              "type": "development_case",
+              "id_field": "ObjectId",
+              "name_field": "Project_Name",
+              "property_role": "surrounding_development",
+              "relationship_type": "nearby_to",
+              "event": {"type": "development_case_observed", "date_fields": ["CO_Date__1st_PCO_", "Building_Permit_Date", "Approval_Date"], "summary_field": "Project_Name"}
+            }
+          },
+          {
+            "key": "stamford_commercial_leases_2026",
+            "label": "Stamford 2026 commercial lease observations",
+            "url": "https://services3.arcgis.com/V28nrLFIbcYZbnPl/arcgis/rest/services/CommercialLeases_2026_p/FeatureServer/0",
+            "category": "market",
+            "predicate": "official_city_commercial_lease_observations",
+            "fact_class": "reported",
+            "confidence": 0.85,
+            "freshness_days": 365,
+            "radius_m": 50,
+            "out_fields": ["OBJECTID", "Address", "Tenant_Name", "SF_Occupied", "Floor", "Space_Use", "Moved_In", "Commencement", "Occupancy_Type", "Rent_SF_year", "Rent_Type", "Employees", "Industry", "Star_Rating", "Building_Name", "Property_Type", "Market", "Submarket", "Landlord", "Future_Move", "Future_Move_Type", "Signed", "Suite"],
+            "limitation": "City-published point observations are a current screening source, not a complete lease abstract, title instrument, rent roll, or independently verified occupancy census.",
+            "source": {
+              "name": "City of Stamford 2026 Commercial Leases GIS",
+              "url": "https://www.choosestamford.com/data-center/commercial-leases-map",
+              "authority": "Official City of Stamford Office of Economic Development publication",
+              "source_date": "2026"
+            },
+            "entity": {
+              "type": "tenant",
+              "id_field": "OBJECTID",
+              "name_field": "Tenant_Name",
+              "relationship_type": "nearby_to",
+              "event": {"type": "commercial_lease_observed", "date_fields": ["Moved_In", "Commencement", "Signed"], "summary_field": "Tenant_Name"},
+              "temporal_state": {
+                "type": "tenant_occurrence",
+                "valid_from_fields": ["Moved_In", "Commencement", "Signed"],
+                "value_fields": ["Address", "Tenant_Name", "SF_Occupied", "Floor", "Space_Use", "Occupancy_Type", "Rent_SF_year", "Rent_Type", "Industry", "Building_Name", "Property_Type", "Landlord", "Suite"]
+              }
+            }
+          },
+          {
+            "key": "stamford_top_commercial_leases_2024_q3",
+            "label": "Stamford top commercial leases 2024 Q3",
+            "url": "https://services3.arcgis.com/V28nrLFIbcYZbnPl/arcgis/rest/services/Top_25_Commercial_Leases_Q324/FeatureServer/0",
+            "category": "market",
+            "predicate": "official_city_historical_commercial_lease_observations",
+            "fact_class": "reported",
+            "confidence": 0.82,
+            "radius_m": 50,
+            "out_fields": ["OBJECTID", "USER_Tenant_Name", "USER_Address", "USER_SF_Occupied", "USER_Moved_In", "USER_Commencement", "USER_Occupancy_Type", "USER_Rent_SF_Yr", "USER_Term__years_"],
+            "limitation": "This City-published top-25 snapshot is historical market evidence, not a complete tenant census or lease abstract.",
+            "source": {"name": "City of Stamford Top 25 Commercial Leases Q3 2024 GIS", "authority": "Official City of Stamford Office of Economic Development publication", "source_date": "2024-Q3"},
+            "entity": {
+              "type": "tenant",
+              "id_field": "OBJECTID",
+              "name_field": "USER_Tenant_Name",
+              "relationship_type": "nearby_to",
+              "event": {"type": "commercial_lease_observed", "date_fields": ["USER_Moved_In", "USER_Commencement"], "summary_field": "USER_Tenant_Name"},
+              "temporal_state": {"type": "tenant_occurrence", "valid_from_fields": ["USER_Moved_In", "USER_Commencement"], "value_fields": ["USER_Tenant_Name", "USER_Address", "USER_SF_Occupied", "USER_Occupancy_Type", "USER_Rent_SF_Yr", "USER_Term__years_"]}
+            }
+          },
+          {
+            "key": "stamford_commercial_inventory_2026",
+            "label": "Stamford 2026 commercial inventory",
+            "url": "https://services3.arcgis.com/V28nrLFIbcYZbnPl/arcgis/rest/services/CommercialInventory_2026Q_P_v3/FeatureServer/0",
+            "category": "market",
+            "predicate": "official_city_commercial_inventory_observations",
+            "fact_class": "reported",
+            "confidence": 0.85,
+            "freshness_days": 365,
+            "radius_m": 1609.344,
+            "out_fields": ["OBJECTID", "Property_Address", "Property_Name", "Property_Type", "Star_Rating", "Energy_Star", "LEED_Certified", "Building_Class", "Building_Status", "RBA", "Total_Available_Space__SF_", "Rent_SF_Yr", "Secondary_Type", "Market_Name", "Submarket_Name", "Leasing_Company_Name", "For_Sale_Price", "For_Sale_Status", "Last_Sale_Date", "Last_Sale_Price", "Percent_Leased", "Year_Built", "Year_Renovated", "Typical_Floor_Size", "Parking_Ratio", "Tenancy", "FEMA_Map_Date", "FEMA_Map_Identifier", "FIRM_ID", "FIRM_Panel_Number", "In_SFHA", "Floodplain_Area"],
+            "limitation": "City-published inventory points are market-screening observations, not verified listing agreements, appraisal conclusions, or complete market coverage.",
+            "source": {
+              "name": "City of Stamford 2026 Commercial Inventory GIS",
+              "url": "https://www.choosestamford.com/data-center/commercial-office-inventory-map",
+              "authority": "Official City of Stamford Office of Economic Development publication",
+              "source_date": "2026"
+            },
+            "entity": {
+              "type": "market_comparable_listing",
+              "id_field": "OBJECTID",
+              "name_field": "Property_Name",
+              "relationship_type": "nearby_to",
+              "event": {"type": "commercial_inventory_sale_observed", "date_fields": ["Last_Sale_Date"], "summary_field": "Property_Address"}
+            }
+          },
+          {
+            "key": "stamford_sales_2023_2024",
+            "label": "Stamford official sales 2023-2024",
+            "url": "https://services3.arcgis.com/V28nrLFIbcYZbnPl/arcgis/rest/services/All_Sales_2023_2024/FeatureServer/0",
+            "category": "market",
+            "predicate": "official_city_historical_sales_screen",
+            "radius_m": 1609.344,
+            "maximum_records": 50,
+            "out_fields": ["OBJECTID", "PropertyType", "Number", "Unit", "StreetName", "SaleDate", "SalePrice", "LivingArea", "AccountDetails"],
+            "limitation": "The City-published sales layer is a screening source; transfers may be non-arm's-length and require deed and assessor verification before comp use.",
+            "source": {"name": "Stamford All Sales 2023-2024 GIS", "authority": "Official City of Stamford GIS publication", "source_date": "2023-2024"},
+            "entity": {"type": "executed_sale_observation", "id_field": "OBJECTID", "name_field": "StreetName", "relationship_type": "nearby_to", "event": {"type": "official_sale_observed", "date_fields": ["SaleDate"], "summary_field": "StreetName"}}
+          },
+          {
+            "key": "stamford_sales_2022",
+            "label": "Stamford official sales 2022",
+            "url": "https://services3.arcgis.com/V28nrLFIbcYZbnPl/arcgis/rest/services/City_of_Stamford_Sales_2022/FeatureServer/0",
+            "category": "market",
+            "predicate": "official_city_historical_sales_screen",
+            "radius_m": 1609.344,
+            "maximum_records": 50,
+            "out_fields": ["OBJECTID_1", "SLH_SALE_DATE", "SLH_PRICE", "REM_PRCL_LOCN_NUM", "REM_PRCL_LOCN_STREET", "REM_MBLU_UNIT", "CNS_AREA_LIVING", "CNS_STYLE_DESC", "Vision_URL", "Addr_Full"],
+            "limitation": "The City-published sales layer is a screening source; transfers may be non-arm's-length and require deed and assessor verification before comp use.",
+            "source": {"name": "Stamford Sales 2022 GIS", "authority": "Official City of Stamford GIS publication", "source_date": "2022"},
+            "entity": {"type": "executed_sale_observation", "id_field": "OBJECTID_1", "name_field": "Addr_Full", "relationship_type": "nearby_to", "event": {"type": "official_sale_observed", "date_fields": ["SLH_SALE_DATE"], "summary_field": "Addr_Full"}}
+          },
+          {
+            "key": "stamford_building_footprints",
+            "label": "City of Stamford building footprints",
+            "url": "https://services3.arcgis.com/V28nrLFIbcYZbnPl/arcgis/rest/services/Building_Footprints/FeatureServer/1",
+            "category": "physical",
+            "predicate": "official_city_building_footprint_intersections",
+            "out_fields": ["OBJECTID", "Type", "Shape__Area", "Shape__Length"],
+            "limitation": "Intersection and source-area attributes are screening evidence; footprint recency and completeness are not stated by the service.",
+            "source": {
+              "name": "City of Stamford Building Footprints GIS",
+              "authority": "Official City of Stamford GIS publication"
+            }
+          },
+          {
+            "key": "stamford_transit_routes",
+            "label": "Stamford transit routes",
+            "url": "https://services3.arcgis.com/V28nrLFIbcYZbnPl/arcgis/rest/services/Stamford_Route_Lines/FeatureServer/0",
+            "category": "access",
+            "predicate": "nearby_transit_route_screen",
+            "radius_m": 400,
+            "out_fields": ["*"],
+            "limitation": "Route proximity is a screening result and does not establish service frequency or legal site access.",
+            "source": {"name": "City of Stamford transit route GIS", "authority": "Official City of Stamford GIS publication"}
+          },
+          {
+            "key": "stamford_pedestrian_paths",
+            "label": "Stamford pedestrian paths",
+            "url": "https://services3.arcgis.com/V28nrLFIbcYZbnPl/arcgis/rest/services/Ped_Paths_Web_Layer/FeatureServer/0",
+            "category": "access",
+            "predicate": "nearby_pedestrian_path_screen",
+            "radius_m": 400,
+            "out_fields": ["OBJECTID", "ConnectingStreet1", "ConnectingStreet2", "Property", "TrailName", "Status", "ProjectName", "MajorGradeChange"],
+            "limitation": "Path proximity does not establish public access rights, route condition, accessibility, or a legal connection to the property.",
+            "source": {"name": "Stamford Pedestrian Paths GIS", "authority": "Official City of Stamford GIS publication"}
+          },
+          {
+            "key": "ct_nwi_wetlands_2024",
+            "label": "Connecticut NWI wetlands 2024",
+            "url": "https://services1.arcgis.com/FjPcSmEFuDYlIdKC/arcgis/rest/services/Connecticut_NWI_Wetlands_2024/FeatureServer/0",
+            "category": "environmental",
+            "predicate": "ct_nwi_wetlands_envelope_screen",
+            "out_fields": ["OBJECTID", "ATTRIBUTE", "WETLAND_TYPE", "ACRES", "NWI_ID"],
+            "limitation": "This envelope-based GIS screen is not a surveyed wetland delineation or jurisdictional determination.",
+            "source": {"name": "Connecticut NWI Wetlands 2024", "url": "https://maps.cteco.uconn.edu/map-services/", "authority": "Connecticut DEEP and U.S. Fish and Wildlife Service", "source_date": "2024"}
+          },
+          {
+            "key": "ct_inland_wetland_soils_2025",
+            "label": "Connecticut inland-wetland soils 2025",
+            "url": "https://services1.arcgis.com/FjPcSmEFuDYlIdKC/arcgis/rest/services/Soils_Inland_Wetland/FeatureServer/0",
+            "category": "environmental",
+            "predicate": "ct_inland_wetland_soils_envelope_screen",
+            "out_fields": ["OBJECTID", "SdvSoilMapLayer1_MUSYM", "SdvSoilMapLayer1_MUKEY", "SdvOutput1_txt_CTInlWet"],
+            "limitation": "This envelope-based soil screen does not replace field delineation, survey, or municipal inland-wetlands review.",
+            "source": {"name": "Connecticut Inland Wetland Soils 2025", "url": "https://maps.cteco.uconn.edu/map-services/", "authority": "Connecticut DEEP and UConn", "source_date": "2025"}
+          },
+          {
+            "key": "ct_brownfields_2025",
+            "label": "Connecticut brownfields inventory 2025",
+            "url": "https://services1.arcgis.com/FjPcSmEFuDYlIdKC/arcgis/rest/services/Brownfields_Final_2025/FeatureServer/0",
+            "where": "Site_Town='Stamford'",
+            "category": "environmental",
+            "predicate": "nearby_ct_brownfields_screen",
+            "radius_m": 1609.344,
+            "out_fields": ["OBJECTID", "Site_Town", "Site_Name", "Site_Addre", "Site_Parce", "Parcel_Acr", "Program", "Program_Ap", "Funding_So", "Planning_R"],
+            "limitation": "Inventory proximity is not a Phase I ESA, a release determination, or evidence that the subject property is contaminated.",
+            "source": {"name": "Connecticut Brownfields Inventory 2025", "authority": "Connecticut Department of Energy and Environmental Protection", "source_date": "2025"}
+          },
+          {
+            "key": "stamford_paving_status",
+            "label": "Stamford paving-status street network",
+            "url": "https://services3.arcgis.com/V28nrLFIbcYZbnPl/arcgis/rest/services/Paving_Status_Map/FeatureServer/0",
+            "category": "access",
+            "predicate": "nearby_official_city_street_screen",
+            "radius_m": 30,
+            "out_fields": ["FID", "PaveRoad", "PaveLimits", "PaveYear", "PaveResp", "PaveStatus", "ClassDirOp", "Shape__Length"],
+            "limitation": "Street-segment proximity does not establish legal access, curb-cut approval, or parcel frontage.",
+            "capabilities": [
+              {
+                "capability": "roads_access_frontage",
+                "status": "partial",
+                "reason": "Official City street/paving segments are screened within 30 meters; legal access, curb cuts, and frontage require title and survey review."
+              }
+            ],
+            "source": {"name": "City of Stamford Paving Status Map", "authority": "Official City of Stamford Operations GIS publication"}
+          },
+          {
+            "key": "stamford_bus_stops",
+            "label": "Stamford bus stops",
+            "url": "https://services3.arcgis.com/V28nrLFIbcYZbnPl/arcgis/rest/services/Stamford_Bus_Stops/FeatureServer/0",
+            "category": "access",
+            "predicate": "nearby_bus_stop_screen",
+            "radius_m": 800,
+            "out_fields": ["OBJECTID", "StopID", "StopCode", "StopName"],
+            "limitation": "Bus-stop proximity does not establish current schedules, service frequency, accessibility, or pedestrian access.",
+            "source": {"name": "City of Stamford Bus Stops GIS", "authority": "Official City of Stamford GIS publication"}
+          },
+          {
+            "key": "ct_connected_sewer_service_area",
+            "label": "Connecticut connected sewer service areas",
+            "url": "https://services1.arcgis.com/FjPcSmEFuDYlIdKC/arcgis/rest/services/Connected_Sewer_Service_Areas/FeatureServer/0",
+            "where": "TOWN='Stamford'",
+            "category": "infrastructure",
+            "predicate": "ct_connected_sewer_service_area_screen",
+            "out_fields": ["OBJECTID", "TOWN", "Sewers", "SewerStatus", "TreatmentFacility", "PassThrough", "Supporting_Document"],
+            "limitation": "Service-area intersection does not establish an active lateral, connection right, invert feasibility, reserved treatment allocation, or property-specific capacity.",
+            "capabilities": [{"capability": "utilities_water_sewer", "status": "partial", "reason": "Official CTDEEP sewer and CTDPH public-water service-area polygons and WPCA system capacity are screened; connection and property-specific engineering capacity remain unverified."}],
+            "source": {"name": "Connecticut DEEP Connected Sewer Service Areas", "authority": "Connecticut Department of Energy and Environmental Protection"}
+          },
+          {
+            "key": "ct_community_public_water_service_area",
+            "label": "Connecticut community public-water service areas",
+            "url": "https://maps.ct.gov/arcgis/rest/services/Hosted/Buffered_Community_PWS_Service_Areas/FeatureServer/0",
+            "category": "infrastructure",
+            "predicate": "ct_community_public_water_service_area_screen",
+            "out_fields": ["fid", "objectid", "pws_name", "pwsid"],
+            "limitation": "Mapped service-area intersection does not establish an active service, connection right, main size, pressure, fire flow, or property-specific capacity.",
+            "source": {"name": "Connecticut DPH Buffered Community Public Water Service Areas", "authority": "Connecticut Department of Public Health"}
+          },
+          {
+            "key": "stamford_stormwater_mains",
+            "label": "Stamford stormwater gravity mains",
+            "url": "https://stamfordgis.org/public/rest/services/FandODrainage/FeatureServer/13",
+            "category": "infrastructure",
+            "predicate": "nearby_city_stormwater_gravity_main_screen",
+            "radius_m": 50,
+            "out_fields": ["OBJECTID", "Enabled", "LifecycleStatus", "Material", "Diameter", "Width", "Height", "CrossSectionShape", "Slope", "FacilityID", "MainType", "OWNER"],
+            "limitation": "Mapped storm-drain proximity does not establish a connection, drainage rights, condition, invert feasibility, or available capacity.",
+            "capabilities": [
+              {
+                "capability": "infrastructure",
+                "status": "working",
+                "reason": "Official City stormwater-network proximity is queryable at activation."
+              },
+              {
+                "capability": "utilities_water_sewer",
+                "status": "partial",
+                "reason": "Official sewer and public-water service-area screening is available alongside stormwater context; parcel connections, pressure, fire flow, lateral feasibility, and reserved capacity require utility confirmation."
+              }
+            ],
+            "source": {"name": "City of Stamford Stormwater Gravity Main GIS", "authority": "Official City of Stamford Engineering GIS publication"}
+          },
+          {
+            "key": "stamford_stormwater_inlets",
+            "label": "Stamford stormwater inlets",
+            "url": "https://stamfordgis.org/public/rest/services/FandODrainage/FeatureServer/5",
+            "category": "infrastructure",
+            "predicate": "nearby_city_stormwater_inlet_screen",
+            "radius_m": 50,
+            "out_fields": ["OBJECTID", "Enabled", "LocationDescription", "LifecycleStatus", "Diameter", "InletType", "FacilityID", "OWNER"],
+            "limitation": "Mapped inlet proximity does not establish a connection, ownership rights, condition, or available capacity.",
+            "source": {"name": "City of Stamford Stormwater Inlet GIS", "authority": "Official City of Stamford Engineering GIS publication"}
+          },
+          {
+            "key": "stamford_stormwater_laterals",
+            "label": "Stamford stormwater laterals",
+            "url": "https://stamfordgis.org/public/rest/services/FandODrainage/FeatureServer/11",
+            "category": "infrastructure",
+            "predicate": "nearby_city_stormwater_lateral_screen",
+            "radius_m": 25,
+            "out_fields": ["OBJECTID", "Enabled", "LifecycleStatus", "Material", "Diameter", "Width", "Height", "CrossSectionShape", "Slope", "LateralType", "FacilityID", "OWNER"],
+            "limitation": "Mapped lateral proximity does not prove that the feature serves the subject, is usable, or has capacity.",
+            "source": {"name": "City of Stamford Stormwater Lateral GIS", "authority": "Official City of Stamford Engineering GIS publication"}
+          },
+          {
+            "key": "stamford_public_parking",
+            "label": "Stamford public garages and lots",
+            "url": "https://services3.arcgis.com/V28nrLFIbcYZbnPl/arcgis/rest/services/Stamford_CT_Public_Garages_And_Lots/FeatureServer/0",
+            "category": "access",
+            "predicate": "nearby_public_parking_screen",
+            "radius_m": 800,
+            "out_fields": ["*"],
+            "limitation": "Nearby public parking does not establish dedicated parking rights or capacity for the subject property.",
+            "source": {"name": "City of Stamford public parking GIS", "authority": "Official City of Stamford GIS publication"}
+          }
+        ]
+      }
+    }
+  ]
+}
