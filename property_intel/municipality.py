@@ -818,7 +818,8 @@ def activate_property(config_path: str | Path, *, address: str | None = None,
 
 def validate_sample(config_path: str | Path, *, seed: int | None = None,
                     require_geometry: bool = True, force: bool = False,
-                    skip_live: bool = False) -> dict[str, Any]:
+                    skip_live: bool = False,
+                    output_root: str | Path | None = None) -> dict[str, Any]:
     """Select a reproducible random precomputed property and activate it.
 
     Selection is entirely data-driven within the configured scope. It contains
@@ -843,7 +844,8 @@ def validate_sample(config_path: str | Path, *, seed: int | None = None,
     finally:
         store.close()
     result = activate_property(
-        config_path, address=selected["address"], force=force, skip_live=skip_live)
+        config_path, address=selected["address"], force=force, skip_live=skip_live,
+        output_root=output_root)
     return {"sample_seed": seed, "candidate_count": len(candidates),
             "selected": {"property_id": selected["property_id"],
                          "name": selected["canonical_name"],
