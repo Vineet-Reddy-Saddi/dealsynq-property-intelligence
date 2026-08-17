@@ -1,0 +1,57 @@
+{
+  "key": "deeds",
+  "adapter": "linked_records",
+  "coverage_status": "partial",
+  "reason": "Licensed Stamford Town Clerk/IQS export ingestion. Coverage becomes complete only after a reconciled export covers the contracted index and images period.",
+  "config": {
+    "maximum_unmatched": 0,
+    "datasets": [
+      {
+        "name": "licensed_stamford_land_record_index",
+        "path": "F:/DealSynq/private-data/stamford_land_records/index.csv",
+        "match": {
+          "parcel_id_field": "parcel_id",
+          "address_field": "property_address",
+          "address_suffix": ", Stamford, CT",
+          "required": true
+        },
+        "source": {
+          "name": "Licensed Stamford Town Clerk land-record export",
+          "authority": "City of Stamford Town Clerk / approved provider",
+          "access_note": "Use only under the executed data-use agreement; retain provider export and image provenance."
+        },
+        "entity": {
+          "type": "recorded_document",
+          "id_field": "recording_id",
+          "name_field": "document_type",
+          "property_role": "recorded_document",
+          "attributes": {
+            "book": "book",
+            "page": "page",
+            "document_type": "document_type",
+            "grantor": "grantor",
+            "grantee": "grantee",
+            "image_uri": "image_uri"
+          }
+        },
+        "relationships": [
+          {"type": "affects", "from": "entity", "to": "parcel", "effective_date_field": "recording_date"}
+        ],
+        "facts": [
+          {"target": "entity", "category": "deeds_liens", "predicate": "recorded_document_type", "field": "document_type"},
+          {"target": "entity", "category": "deeds_liens", "predicate": "recorded_book", "field": "book"},
+          {"target": "entity", "category": "deeds_liens", "predicate": "recorded_page", "field": "page"},
+          {"target": "entity", "category": "deeds_liens", "predicate": "recorded_grantor", "field": "grantor"},
+          {"target": "entity", "category": "deeds_liens", "predicate": "recorded_grantee", "field": "grantee"},
+          {"target": "entity", "category": "deeds_liens", "predicate": "recorded_consideration", "field": "consideration", "value_type": "number", "unit": "USD"}
+        ],
+        "event": {
+          "type": "land_recorded",
+          "date_field": "recording_date",
+          "summary_field": "document_type",
+          "subject": "entity"
+        }
+      }
+    ]
+  }
+}
